@@ -1,9 +1,17 @@
-# NOTE: gh-axi additionally pins minimumReleaseAge=10080 as a supply-chain
-# guard. That setting needs registry "time" metadata, which corporate proxy
-# registries strip; re-add it together with CI in Phase 4 (CI resolves against
-# the public registry).
+# minimumReleaseAge (7 days) is a supply-chain guard against fresh malicious
+# releases. It needs registry "time" metadata at RESOLUTION time; installs
+# from the committed lockfile don't resolve, so day-to-day `pnpm install`
+# works everywhere. Dependency bumps behind a corporate proxy registry that
+# strips "time" (e.g. Corp Airlock) will fail with ERR_PNPM_MISSING_TIME -
+# bump deps on CI or a machine with direct registry access.
 packages:
   - "."
+
+minimumReleaseAge: 10080
+minimumReleaseAgeStrict: true
+minimumReleaseAgeExclude:
+  - axi-sdk-js
+  - kubectl-axi
 
 onlyBuiltDependencies:
   - esbuild

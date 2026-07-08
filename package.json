@@ -13,10 +13,12 @@
     "url": "https://github.com/yangligt2/kubectl-axi/issues"
   },
   "bin": {
-    "kubectl-axi": "./dist/bin/kubectl-axi.js"
+    "kubectl-axi": "./dist/bin/kubectl-axi.js",
+    "kubectl-axi-ctx": "./dist/bin/kubectl-axi-ctx.js"
   },
   "files": [
     "dist",
+    "skills/kubectl-axi",
     "LICENSE",
     "README.md"
   ],
@@ -34,6 +36,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "build:skill": "tsx scripts/build-skill.ts",
     "dev": "tsx bin/kubectl-axi.ts",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -57,6 +60,7 @@
     "tsx": "^4.0.0",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.58.0",
-    "vitest": "^3.0.0"
+    "vitest": "^3.0.0",
+    "yaml": "^2.9.0"
   }
 }

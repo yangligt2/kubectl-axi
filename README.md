@@ -10,6 +10,31 @@ Because the installed binary is named `kubectl-axi`, kubectl's plugin mechanism 
 
 See [PLAN.md](PLAN.md) for the build plan.
 
+## Quick Start
+
+Install the kubectl-axi skill in the [Agent Skills](https://agentskills.io) format with [`npx skills`](https://github.com/vercel-labs/skills):
+
+```sh
+npx skills add yangligt2/kubectl-axi --skill kubectl-axi -g
+```
+
+That is the entire setup - no npm install needed. The skill teaches your agent to run kubectl-axi through `npx -y kubectl-axi`, so the CLI comes along on demand. You still need `kubectl` on PATH with a working kubeconfig (Node 20+ required); kubectl-axi inherits kubectl's cluster access and adds no auth of its own.
+
+### Other ways to install
+
+**Zero setup** - any capable agent can run the CLI with nothing installed. Add to your CLAUDE.md / AGENTS.md:
+
+```
+Use `npx -y kubectl-axi` for Kubernetes troubleshooting.
+```
+
+**Session hook** - ambient context (current kubectl context + namespace, read from the local kubeconfig only, never the cluster) fed into every agent session:
+
+```sh
+npm install -g kubectl-axi
+kubectl-axi setup hooks     # Claude Code, Codex, OpenCode; restart your session after
+```
+
 ## Usage (so far)
 
 ```sh
@@ -25,6 +50,8 @@ kubectl-axi events -A --warnings       # events newest-first (fixes kubectl's un
 kubectl-axi deploy              # deployments, degraded first (catches stuck rollouts at full replicas)
 kubectl-axi svc view <name> -n <ns>    # selector vs matching pods vs endpoints - diagnoses zero-endpoint services
 kubectl-axi nodes               # readiness + pressure conditions
+kubectl-axi ctx                 # kubeconfig-local context/namespace (what the session hook prints)
+kubectl-axi setup hooks         # install SessionStart hooks (Claude Code, Codex, OpenCode)
 ```
 
 Global flags on any command: `-n/--namespace <ns>`, `-A/--all-namespaces`, `--context <name>`.
@@ -39,7 +66,10 @@ pnpm run build       # compile TypeScript to dist/
 pnpm run dev -- ...  # run the CLI with tsx
 pnpm test            # vitest (kubectl mocked)
 pnpm run lint
+pnpm run build:skill # regenerate skills/kubectl-axi/SKILL.md (CI fails if it drifts)
 ```
+
+Releases are cut by [release-please](https://github.com/googleapis/release-please) from conventional commits on `main`; merging the release PR publishes to npm with OIDC provenance. Do not hand-edit `CHANGELOG.md` or `.release-please-manifest.json` - a guard workflow blocks PRs that touch them.
 
 ### Fixture cluster
 
