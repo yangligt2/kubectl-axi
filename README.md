@@ -2,7 +2,7 @@
 
 Kubernetes troubleshooting CLI for agents - designed with [AXI](https://github.com/kunchenguid/axi) (Agent eXperience Interface).
 
-**Status: under development.** Version 0.0.1 is a placeholder release reserving the package name.
+**Status: under development.** The published 0.0.1 is a name-reservation placeholder; the CLI is being built here.
 
 Wraps `kubectl` with token-efficient diagnostic views (pod autopsy, sorted events, truncated logs) and pre-computed triage aggregates that collapse the multi-turn debug loop (get pods -> describe -> logs -> events) into a single call. Read-only in v1: this tool cannot break your cluster.
 
@@ -10,7 +10,28 @@ Because the installed binary is named `kubectl-axi`, kubectl's plugin mechanism 
 
 See [PLAN.md](PLAN.md) for the build plan.
 
+## Usage (so far)
+
+```sh
+kubectl-axi                     # cluster snapshot: context, namespace, not-ready pods
+kubectl-axi pods                # list pods, not-ready sorted first
+kubectl-axi pods -A             # across all namespaces
+kubectl-axi pods view <name> -n <ns>   # pod autopsy: containers, last terminations, probes, recent events
+```
+
+Global flags on any command: `-n/--namespace <ns>`, `-A/--all-namespaces`, `--context <name>`.
+
 ## Development
+
+### CLI
+
+```sh
+pnpm install
+pnpm run build       # compile TypeScript to dist/
+pnpm run dev -- ...  # run the CLI with tsx
+pnpm test            # vitest (kubectl mocked)
+pnpm run lint
+```
 
 ### Fixture cluster
 

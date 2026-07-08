@@ -1,7 +1,8 @@
 {
   "name": "kubectl-axi",
   "version": "0.0.1",
-  "description": "Kubernetes troubleshooting CLI for agents - AXI-compliant kubectl wrapper (placeholder release reserving the package name)",
+  "packageManager": "pnpm@11.1.1",
+  "description": "Kubernetes troubleshooting CLI for agents - AXI-compliant kubectl wrapper with token-efficient TOON output",
   "type": "module",
   "repository": {
     "type": "git",
@@ -12,12 +13,12 @@
     "url": "https://github.com/yangligt2/kubectl-axi/issues"
   },
   "bin": {
-    "kubectl-axi": "./bin/kubectl-axi.mjs"
+    "kubectl-axi": "./dist/bin/kubectl-axi.js"
   },
   "files": [
-    "bin",
-    "README.md",
-    "LICENSE"
+    "dist",
+    "LICENSE",
+    "README.md"
   ],
   "keywords": [
     "kubernetes",
@@ -28,11 +29,34 @@
     "toon",
     "troubleshooting"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx bin/kubectl-axi.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "prepublishOnly": "npm run build"
+  },
   "license": "MIT",
   "engines": {
     "node": ">=20"
   },
-  "publishConfig": {
-    "access": "public"
+  "dependencies": {
+    "@toon-format/toon": "^2.1.0",
+    "axi-sdk-js": "^0.1.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.0.0",
+    "eslint": "^10.1.0",
+    "globals": "^17.4.0",
+    "prettier": "^3.8.1",
+    "tsx": "^4.0.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.58.0",
+    "vitest": "^3.0.0"
   }
 }

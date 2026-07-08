@@ -1,0 +1,11 @@
+# NOTE: gh-axi additionally pins minimumReleaseAge=10080 as a supply-chain
+# guard. That setting needs registry "time" metadata, which corporate proxy
+# registries strip; re-add it together with CI in Phase 4 (CI resolves against
+# the public registry).
+packages:
+  - "."
+
+onlyBuiltDependencies:
+  - esbuild
+allowBuilds:
+  esbuild: true
