@@ -28,11 +28,13 @@ Remote mode (kind + docker on another host, passwordless SSH):
 
 ```sh
 echo 'REMOTE_HOST=<host>' > .env.local
-make remote-up       # sync fixtures, create cluster there, fetch kubeconfig
+make remote-up       # sync fixtures, create cluster there, fetch + merge kubeconfig
 make tunnel          # forward the API server to 127.0.0.1:6443
 make verify-local    # verify through the tunnel
-make tunnel-down && make remote-down   # teardown
+make tunnel-down && make remote-down   # teardown (also removes merged kubeconfig entries)
 ```
+
+`remote-up` merges the `kind-kubectl-axi-bench` context into your `~/.kube/config` (current context untouched, backup kept at `~/.kube/config.bak-kubectl-axi`), so once the tunnel is up plain `kubectl --context kind-kubectl-axi-bench` works directly. Set `MERGE_KUBECONFIG=0` to opt out.
 
 ## License
 

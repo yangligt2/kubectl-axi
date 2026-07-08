@@ -9,4 +9,11 @@ CLUSTER_NAME="${CLUSTER_NAME:-kubectl-axi-bench}"
 
 ssh "${REMOTE_HOST}" "kind delete cluster --name ${CLUSTER_NAME}"
 rm -f "${ROOT}/.kube/config"
-echo "cluster ${CLUSTER_NAME} deleted on ${REMOTE_HOST}" >&2
+
+# Remove the merged entries from ~/.kube/config (no-ops if absent).
+if [ -f "${HOME}/.kube/config" ]; then
+  for kctx in delete-context delete-cluster delete-user; do
+    kubectl config --kubeconfig="${HOME}/.kube/config" "${kctx}" "kind-${CLUSTER_NAME}" >/dev/null 2>&1 || true
+  done
+fi
+echo "cluster ${CLUSTER_NAME} deleted on ${REMOTE_HOST}; local kubeconfig entries removed" >&2

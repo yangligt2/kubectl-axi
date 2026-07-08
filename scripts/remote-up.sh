@@ -24,8 +24,31 @@ mkdir -p "${ROOT}/.kube"
 ssh "${REMOTE_HOST}" "kind get kubeconfig --name ${CLUSTER_NAME}" > "${ROOT}/.kube/config"
 chmod 600 "${ROOT}/.kube/config"
 
+# Merge the cluster's context into ~/.kube/config so plain
+# `kubectl --context kind-<cluster>` works locally once the tunnel is up.
+# The user's current-context is preserved (home config listed first wins),
+# stale entries from a previous cluster are replaced, and a backup is kept.
+# Opt out with MERGE_KUBECONFIG=0.
+if [ "${MERGE_KUBECONFIG:-1}" = "1" ]; then
+  mkdir -p "${HOME}/.kube"
+  if [ -f "${HOME}/.kube/config" ]; then
+    cp "${HOME}/.kube/config" "${HOME}/.kube/config.bak-kubectl-axi"
+    for kctx in delete-context delete-cluster delete-user; do
+      kubectl config --kubeconfig="${HOME}/.kube/config" "${kctx}" "kind-${CLUSTER_NAME}" >/dev/null 2>&1 || true
+    done
+    KUBECONFIG="${HOME}/.kube/config:${ROOT}/.kube/config" \
+      kubectl config view --flatten > "${HOME}/.kube/config.merge-tmp"
+    mv "${HOME}/.kube/config.merge-tmp" "${HOME}/.kube/config"
+  else
+    cp "${ROOT}/.kube/config" "${HOME}/.kube/config"
+  fi
+  chmod 600 "${HOME}/.kube/config"
+  echo "context kind-${CLUSTER_NAME} merged into ~/.kube/config (backup: ~/.kube/config.bak-kubectl-axi)" >&2
+fi
+
 echo "" >&2
 echo "kubeconfig written to .kube/config (server https://127.0.0.1:${API_SERVER_PORT})" >&2
 echo "next:" >&2
 echo "  make tunnel          # forward 127.0.0.1:${API_SERVER_PORT} over SSH" >&2
+echo "  kubectl --context kind-${CLUSTER_NAME} get ns   # plain local kubectl now works" >&2
 echo "  make verify-local    # verify fixtures through the tunnel" >&2
