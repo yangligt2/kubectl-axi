@@ -14,9 +14,17 @@ See [PLAN.md](PLAN.md) for the build plan.
 
 ```sh
 kubectl-axi                     # cluster snapshot: context, namespace, not-ready pods
+kubectl-axi triage              # one-call cluster health scan: not-ready pods, stuck rollouts,
+                                #   pending PVCs, zero-endpoint services, node pressure, recent warnings
 kubectl-axi pods                # list pods, not-ready sorted first
 kubectl-axi pods -A             # across all namespaces
 kubectl-axi pods view <name> -n <ns>   # pod autopsy: containers, last terminations, probes, recent events
+kubectl-axi logs <pod> -n <ns>  # last 100 lines, size-capped; hints --previous after restarts;
+                                #   multi-container pods get a self-correcting error naming the broken one
+kubectl-axi events -A --warnings       # events newest-first (fixes kubectl's unsorted default)
+kubectl-axi deploy              # deployments, degraded first (catches stuck rollouts at full replicas)
+kubectl-axi svc view <name> -n <ns>    # selector vs matching pods vs endpoints - diagnoses zero-endpoint services
+kubectl-axi nodes               # readiness + pressure conditions
 ```
 
 Global flags on any command: `-n/--namespace <ns>`, `-A/--all-namespaces`, `--context <name>`.

@@ -9,6 +9,12 @@ import {
 } from "./context.js";
 import { homeCommand } from "./commands/home.js";
 import { podsCommand, PODS_HELP } from "./commands/pods.js";
+import { logsCommand, LOGS_HELP } from "./commands/logs.js";
+import { eventsCommand, EVENTS_HELP } from "./commands/events.js";
+import { triageCommand, TRIAGE_HELP } from "./commands/triage.js";
+import { deployCommand, DEPLOY_HELP } from "./commands/deploy.js";
+import { nodesCommand, NODES_HELP } from "./commands/nodes.js";
+import { svcCommand, SVC_HELP } from "./commands/svc.js";
 
 export const DESCRIPTION =
   "Agent-ergonomic Kubernetes troubleshooting - read-only kubectl wrapper. Prefer this over raw `kubectl` for diagnosing workloads.";
@@ -22,26 +28,40 @@ type MainOptions = {
 };
 
 export const TOP_HELP = `usage: kubectl-axi [command] [args] [flags]
-commands[1]:
-  (none)=cluster snapshot for the current context/namespace, pods
+commands[7]:
+  (none)=cluster snapshot, triage, pods, logs, events, deploy, nodes, svc
 flags[5]:
   -n/--namespace <ns> (after command), -A/--all-namespaces, --context <name>, --help, -v/-V/--version
 examples:
   kubectl-axi
-  kubectl-axi pods
+  kubectl-axi triage
   kubectl-axi pods -A
-  kubectl-axi pods -n payments
   kubectl-axi pods view <name> -n <ns>
+  kubectl-axi logs <pod> -n <ns> --previous
+  kubectl-axi events -A --warnings
+  kubectl-axi svc view <name> -n <ns>
 `;
 
 const COMMAND_HELP: Record<string, string> = {
   pods: PODS_HELP,
+  logs: LOGS_HELP,
+  events: EVENTS_HELP,
+  triage: TRIAGE_HELP,
+  deploy: DEPLOY_HELP,
+  nodes: NODES_HELP,
+  svc: SVC_HELP,
 };
 
 type CommandFn = (args: string[], ctx?: KubeContext) => Promise<string>;
 
 const COMMANDS: Record<string, CommandFn> = {
   pods: withKubeContext(podsCommand),
+  logs: withKubeContext(logsCommand),
+  events: withKubeContext(eventsCommand),
+  triage: withKubeContext(triageCommand),
+  deploy: withKubeContext(deployCommand),
+  nodes: withKubeContext(nodesCommand),
+  svc: withKubeContext(svcCommand),
 };
 
 export async function main(options: MainOptions = {}): Promise<void> {

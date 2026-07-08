@@ -33,6 +33,7 @@ const table: SuggestionEntry[] = [
   {
     match: (c) => c.domain === "home",
     lines: (c) => [
+      `Run \`kubectl-axi triage${c.kube?.context ? ` --context ${c.kube.context}` : ""}\` to scan the whole cluster for problems`,
       `Run \`kubectl-axi pods${scopeFlags(c)}\` to list pods (add -A for all namespaces)`,
       `Run \`kubectl-axi pods view <name> -n <ns>\` to diagnose a pod`,
     ],

@@ -233,6 +233,26 @@ async function viewPod(args: string[], ctx?: KubeContext): Promise<string> {
     blocks.push("events: none recorded for this pod");
   }
 
+  // Natural next step after a broken pod: its logs - with the container
+  // name filled in so the suggestion runs as-is (AXI P9).
+  const allStatuses = [
+    ...initStatuses,
+    ...(pod.status?.containerStatuses ?? []),
+  ];
+  const broken = allStatuses.find(
+    (s) => (s.restartCount ?? 0) > 0 || s.state?.waiting !== undefined,
+  );
+  if (broken) {
+    const nsFlag = pod.metadata.namespace ? ` -n ${pod.metadata.namespace}` : "";
+    const ctxFlag = ctx?.context ? ` --context ${ctx.context}` : "";
+    const previousHint = (broken.restartCount ?? 0) > 0 ? " (add --previous for the run before the last restart)" : "";
+    blocks.push(
+      renderHelp([
+        `Run \`kubectl-axi logs ${pod.metadata.name} -c ${broken.name}${nsFlag}${ctxFlag}\` to see why ${broken.name} is failing${previousHint}`,
+      ]),
+    );
+  }
+
   return renderOutput(blocks);
 }
 
