@@ -61,7 +61,7 @@ Injected faults make LLM-judge grading hints deterministic ("correct answer: pod
 ## Phases
 
 - **Phase 0 - Lock decisions** (done, see table above). Reserve npm name with a 0.0.1 placeholder publish.
-- **Phase 1 - Spec via benchmark tasks + fault fixtures** (2-3 days). Draft `tasks.yaml` for ~14 troubleshooting tasks in the bench-github format, one per fault above. This is the product spec; write it before CLI code.
+- **Phase 1 - Spec via benchmark tasks + fault fixtures** (done). `bench/tasks.yaml` holds 14 tasks in the bench-github format; `fixtures/faults/` holds the 12 fixtures; `make cluster-up`/`remote-up` + `verify` bring up and validate the kind cluster (local or on a remote docker host over SSH).
 - **Phase 2 - Repo bootstrap** (1-2 days). Clone-and-gut gh-axi: keep `runAxiCli` wiring, args/format/toon/suggestions/errors modules, `build-skill.ts` + drift test, CI workflows, release-please config. Land `pods` end-to-end (list, TOON, non-ready sorted first, suggestions) with unit tests against captured kubectl JSON fixtures before writing more.
 - **Phase 3 - Command surface** (1-2 weeks). The ordered list above.
 - **Phase 4 - Distribution artifacts** (2-3 days). Generated skill + drift test, README with the three install paths (zero-setup `npx -y`, skill via `npx skills add`, global install + hooks), `setup hooks` (kubeconfig-local only), catalog PR to the axi repo.

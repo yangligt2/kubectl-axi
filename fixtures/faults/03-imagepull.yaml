@@ -1,0 +1,28 @@
+# Fault 3: ImagePullBackOff
+# Image tag does not exist in the registry.
+# Expected steady state: pod Pending-ish with waiting reason ImagePullBackOff/ErrImagePull.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fault-imagepull
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: fault-imagepull
+  labels:
+    app: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.99.99-nonexistent

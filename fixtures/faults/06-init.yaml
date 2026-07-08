@@ -1,0 +1,39 @@
+# Fault 6: Init container failure
+# The init container exits 1; the main container never starts.
+# Expected steady state: pod stuck in Init:CrashLoopBackOff.
+# Root cause is in the init container's logs, not the main container's.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fault-init
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: fault-init
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      initContainers:
+        - name: migrate
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - >-
+              echo "running database migration 0042_add_orders_index";
+              echo "ERROR: migration table is locked by another job" >&2;
+              exit 1
+      containers:
+        - name: backend
+          image: nginx:1.27-alpine

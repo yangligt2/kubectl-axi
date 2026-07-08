@@ -1,0 +1,42 @@
+# Fault 2: OOMKilled
+# Container allocates unbounded memory against a 25Mi limit.
+# Expected steady state: restarting pod with lastState.terminated.reason == OOMKilled.
+# Distinguishing signal vs fault 1: the termination reason, not the logs.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fault-oom
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cache
+  namespace: fault-oom
+  labels:
+    app: cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cache
+  template:
+    metadata:
+      labels:
+        app: cache
+    spec:
+      containers:
+        - name: cache
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - >-
+              echo "warming cache from snapshot";
+              sleep 2;
+              tail /dev/zero
+          resources:
+            requests:
+              memory: 10Mi
+              cpu: 10m
+            limits:
+              memory: 25Mi

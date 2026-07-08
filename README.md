@@ -10,6 +10,30 @@ Because the installed binary is named `kubectl-axi`, kubectl's plugin mechanism 
 
 See [PLAN.md](PLAN.md) for the build plan.
 
+## Development
+
+### Fixture cluster
+
+The dev/benchmark environment is a kind cluster seeded with 12 fixtures ([fixtures/faults/](fixtures/faults/)): crash loops, OOM kills, image pull failures, probe misconfigurations, stuck rollouts, selector mismatches, and one healthy namespace as the definitive-negative control. [bench/tasks.yaml](bench/tasks.yaml) defines the troubleshooting tasks graded against them.
+
+Local mode (kind + docker on this machine):
+
+```sh
+make cluster-up      # create cluster, apply fixtures
+make verify          # wait for all 12 fixtures to reach steady state
+make cluster-down
+```
+
+Remote mode (kind + docker on another host, passwordless SSH):
+
+```sh
+echo 'REMOTE_HOST=<host>' > .env.local
+make remote-up       # sync fixtures, create cluster there, fetch kubeconfig
+make tunnel          # forward the API server to 127.0.0.1:6443
+make verify-local    # verify through the tunnel
+make tunnel-down && make remote-down   # teardown
+```
+
 ## License
 
 MIT

@@ -4,5 +4,10 @@ node_modules/
 # Build output
 dist/
 
+# Local environment (remote host names, fetched kubeconfig, tunnel socket)
+.env.local
+.kube/
+.ssh-tunnel.sock
+
 # OS
 .DS_Store

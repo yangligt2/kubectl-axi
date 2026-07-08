@@ -1,0 +1,41 @@
+# Fault 11: Multi-container pod, one container broken
+# The web container is healthy; the log-shipper sidecar crash-loops.
+# Forces correct -c handling: logs from the right container, and the pod
+# shows 1/2 Ready.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fault-multicontainer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-with-shipper
+  namespace: fault-multicontainer
+  labels:
+    app: web-with-shipper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-with-shipper
+  template:
+    metadata:
+      labels:
+        app: web-with-shipper
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+        - name: log-shipper
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - >-
+              echo "shipping logs to log-collector.logging.svc:9200";
+              echo "ERROR: cannot resolve log-collector.logging.svc" >&2;
+              sleep 3;
+              exit 1

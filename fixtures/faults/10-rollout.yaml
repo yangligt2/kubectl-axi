@@ -1,0 +1,35 @@
+# Fault 10: Stuck rollout (two-act fixture)
+# Act 1 (this manifest): a healthy 3-replica deployment on a good image.
+# Act 2 (performed by scripts/cluster-up.sh after rollout completes):
+#   kubectl -n fault-rollout set image deploy/checkout app=nginx:2.0-does-not-exist
+# Expected steady state: old pods still Running and serving, one surge pod
+# stuck ImagePullBackOff, deployment condition Progressing=False with
+# reason ProgressDeadlineExceeded.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fault-rollout
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout
+  namespace: fault-rollout
+  labels:
+    app: checkout
+spec:
+  replicas: 3
+  progressDeadlineSeconds: 60
+  selector:
+    matchLabels:
+      app: checkout
+  template:
+    metadata:
+      labels:
+        app: checkout
+    spec:
+      containers:
+        - name: app
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80

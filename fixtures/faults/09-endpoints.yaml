@@ -1,0 +1,43 @@
+# Fault 9: Service with zero endpoints
+# The pods are healthy and Ready, but the Service selector does not match
+# their labels (web-backend-v2 vs web-backend), so the endpoints list is empty.
+# Expected steady state: deployment fully ready, service endpoints empty.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fault-endpoints
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-backend
+  namespace: fault-endpoints
+  labels:
+    app: web-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web-backend
+  template:
+    metadata:
+      labels:
+        app: web-backend
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: fault-endpoints
+spec:
+  selector:
+    app: web-backend-v2
+  ports:
+    - port: 80
+      targetPort: 80

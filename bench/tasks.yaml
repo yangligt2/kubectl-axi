@@ -1,0 +1,180 @@
+# kubectl-axi benchmark tasks - the product spec for the CLI.
+#
+# Format mirrors bench-github/config/tasks.yaml in the axi repo; this file
+# migrates there (bench-k8s/config/tasks.yaml) in Phase 5.
+#
+# Every task runs against the kind fixture cluster created by
+# scripts/cluster-up.sh, whose injected faults make grading deterministic:
+# each grading_hint states the ground truth planted by fixtures/faults/.
+#
+# Grading: LLM-as-judge over the agent trajectory. Reporting a diagnosis
+# without running commands that could support it is a failure.
+
+tasks:
+  # ── Category A: Single-step diagnosis ──────────────────────────
+
+  diagnose_crashloop:
+    category: single_step
+    prompt: >
+      Pods in namespace fault-crashloop keep restarting. Find the root cause
+      and report the exact error message the failing container logs.
+    grading:
+      grading_hint: >
+        The container logs "FATAL: cannot connect to database db.internal:5432
+        - connection refused" before exiting. The agent must retrieve container
+        logs (current or --previous) and quote/paraphrase the database
+        connection error. Reporting only "CrashLoopBackOff" without the log
+        line is a failure.
+
+  diagnose_oom:
+    category: single_step
+    prompt: >
+      The pod in namespace fault-oom keeps restarting. Report why it is being
+      killed and the configured memory limit.
+    grading:
+      grading_hint: >
+        Last termination reason is OOMKilled; the container has a 25Mi memory
+        limit. Both facts are required. Attributing the restarts to an
+        application crash (rather than the OOM kill) is a failure.
+
+  diagnose_imagepull:
+    category: single_step
+    prompt: >
+      The deployment in namespace fault-imagepull is not coming up. Report why,
+      including the exact image reference that is failing.
+    grading:
+      grading_hint: >
+        The pod is in ImagePullBackOff because image nginx:1.99.99-nonexistent
+        does not exist. The agent must name the full image:tag.
+
+  diagnose_readiness:
+    category: single_step
+    prompt: >
+      The pod in namespace fault-readiness is Running but never becomes Ready.
+      Explain the root cause.
+    grading:
+      grading_hint: >
+        The readiness probe targets port 8080 (path /healthz) but nginx listens
+        on port 80, so the probe is refused. The agent must identify the
+        probe/port mismatch, not just "readiness probe failing".
+
+  diagnose_configmap:
+    category: single_step
+    prompt: >
+      Report why the pod in namespace fault-configmap cannot start, and name
+      the missing resource.
+    grading:
+      grading_hint: >
+        CreateContainerConfigError: the container sources env from ConfigMap
+        "app-config", which does not exist. The agent must name app-config.
+
+  diagnose_unschedulable:
+    category: single_step
+    prompt: >
+      The pod in namespace fault-unschedulable is stuck Pending. Report the
+      scheduling constraint that cannot be satisfied.
+    grading:
+      grading_hint: >
+        The pod's nodeSelector requires disktype=ssd-nvme-gen5 and no node has
+        that label. The agent must surface the nodeSelector/label mismatch.
+
+  # ── Category B: Multi-step diagnosis (chaining) ────────────────
+
+  diagnose_init:
+    category: multi_step
+    prompt: >
+      The pod in namespace fault-init is stuck initializing. Report which init
+      container is failing and the error it logs.
+    grading:
+      grading_hint: >
+        Init container "migrate" fails, logging "ERROR: migration table is
+        locked by another job". Requires fetching logs of the init container
+        specifically (-c migrate), not the main container.
+
+  diagnose_pvc:
+    category: multi_step
+    prompt: >
+      The pod in namespace fault-pvc is stuck Pending. Trace the problem to its
+      underlying resource and report the root cause.
+    grading:
+      grading_hint: >
+        The pod mounts PVC "data-cache", which is Pending because its
+        StorageClass "fast-ssd" does not exist in the cluster. Full credit
+        requires the chain pod -> unbound PVC -> nonexistent StorageClass;
+        stopping at "PVC not bound" is partial and counts as failure.
+
+  diagnose_endpoints:
+    category: multi_step
+    prompt: >
+      Requests to service "web" in namespace fault-endpoints fail, but the
+      application pods look healthy. Find the root cause.
+    grading:
+      grading_hint: >
+        The service selector is app=web-backend-v2 while the pods are labeled
+        app=web-backend, so the service has zero endpoints. The agent must
+        identify the selector/label mismatch (or explicitly the empty
+        endpoints), not blame the pods.
+
+  diagnose_rollout:
+    category: multi_step
+    prompt: >
+      The team shipped v2 of the app in namespace fault-rollout, but users
+      still see v1. Report the state of the rollout and the root cause.
+    grading:
+      grading_hint: >
+        Deployment "checkout" has Progressing=False with reason
+        ProgressDeadlineExceeded: the v2 image nginx:2.0-does-not-exist cannot
+        be pulled, the new replica set is stuck, and the old v1 pods are still
+        serving. The agent must report both that the rollout is stuck and why.
+
+  diagnose_multicontainer:
+    category: multi_step
+    prompt: >
+      One container in the pod in namespace fault-multicontainer is crashing.
+      Name the failing container and report the error from its logs.
+    grading:
+      grading_hint: >
+        The "log-shipper" sidecar crashes logging "ERROR: cannot resolve
+        log-collector.logging.svc"; the "web" container is healthy. Requires
+        selecting the right container's logs (-c log-shipper). Reporting the
+        web container as faulty is a failure.
+
+  # ── Category C: Triage and definitive answers ──────────────────
+
+  healthy_namespace_check:
+    category: triage
+    prompt: >
+      Is anything wrong with the workloads in namespace "healthy"? Give a
+      definitive answer.
+    grading:
+      grading_hint: >
+        Nothing is wrong: deployment storefront is 2/2 ready and service
+        storefront has matching endpoints. The correct answer is a confident
+        "everything is healthy". Hedging ("seems fine but check X") or
+        inventing problems is a failure.
+
+  cluster_triage:
+    category: triage
+    prompt: >
+      Give an operator a triage summary of everything currently broken in this
+      cluster: each failing workload and its root-cause category.
+    grading:
+      grading_hint: >
+        There are 11 fault namespaces (fault-crashloop, fault-oom,
+        fault-imagepull, fault-readiness, fault-configmap, fault-init,
+        fault-unschedulable, fault-pvc, fault-endpoints, fault-rollout,
+        fault-multicontainer) with distinct root causes, plus a healthy
+        namespace that must NOT be flagged. Full credit: at least 9 of the 11
+        correctly identified with a plausible root-cause category. Missing 3+
+        faults, or flagging the healthy namespace as broken, is a failure.
+
+  node_health:
+    category: triage
+    prompt: >
+      Report the health of this cluster's nodes: are any under resource
+      pressure or otherwise not ready?
+    grading:
+      grading_hint: >
+        The single kind control-plane node is Ready with no memory/disk/PID
+        pressure. The correct answer states the node is healthy definitively.
+        The agent must have inspected node status/conditions, not guessed.
