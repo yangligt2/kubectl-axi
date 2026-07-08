@@ -1,0 +1,38 @@
+{
+  "name": "kubectl-axi",
+  "version": "0.0.1",
+  "description": "Kubernetes troubleshooting CLI for agents - AXI-compliant kubectl wrapper (placeholder release reserving the package name)",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yangligt2/kubectl-axi.git"
+  },
+  "homepage": "https://github.com/yangligt2/kubectl-axi#readme",
+  "bugs": {
+    "url": "https://github.com/yangligt2/kubectl-axi/issues"
+  },
+  "bin": {
+    "kubectl-axi": "./bin/kubectl-axi.mjs"
+  },
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "kubernetes",
+    "kubectl",
+    "cli",
+    "agent",
+    "axi",
+    "toon",
+    "troubleshooting"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
