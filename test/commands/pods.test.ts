@@ -279,6 +279,30 @@ describe("podsCommand", () => {
       );
     });
 
+    it("shows scheduling constraints for an unschedulable pod", async () => {
+      const pod = makePod({
+        name: "search-indexer",
+        namespace: "fault-unschedulable",
+        phase: "Pending",
+        unschedulable: true,
+      });
+      pod.spec!.nodeSelector = { disktype: "ssd-nvme-gen5" };
+
+      mockedJson.mockImplementation(async (args: string[]) => {
+        if (args.includes("events")) return { items: [] };
+        return pod;
+      });
+
+      const result = await podsCommand(["view", "search-indexer"], {
+        namespace: "fault-unschedulable",
+        allNamespaces: false,
+      });
+
+      expect(result).toContain("scheduling:");
+      expect(result).toContain("node_selector: disktype=ssd-nvme-gen5");
+      expect(result).toContain("0/1 nodes are available");
+    });
+
     it("prints a definitive line when the pod has no events", async () => {
       mockedJson.mockImplementation(async (args: string[]) => {
         if (args.includes("events")) {

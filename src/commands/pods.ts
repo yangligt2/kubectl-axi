@@ -12,10 +12,12 @@ import {
   isNotReady,
   lastStateString,
   limitsSummary,
+  nodeSelectorExpression,
   podReady,
   podRestarts,
   podStatus,
   probeSummary,
+  unschedulableMessage,
   type ContainerStatus,
   type Pod,
 } from "../podstatus.js";
@@ -177,6 +179,25 @@ async function viewPod(args: string[], ctx?: KubeContext): Promise<string> {
       },
     }),
   );
+
+  // Scheduling block: only meaningful when the pod can't be placed. Surfaces
+  // the scheduler's message AND the pod's own nodeSelector so the agent can
+  // see which constraint failed without hunting for the spec.
+  const unschedulable = unschedulableMessage(pod);
+  if (unschedulable) {
+    const selector = nodeSelectorExpression(pod);
+    blocks.push(
+      encode({
+        scheduling: {
+          reason: unschedulable,
+          node_selector: selector ?? "none",
+          tolerations: (pod.spec?.tolerations ?? [])
+            .map((t) => t.key ?? "*")
+            .join(",") || "none",
+        },
+      }),
+    );
+  }
 
   const initStatuses = pod.status?.initContainerStatuses ?? [];
   if (initStatuses.length > 0) {

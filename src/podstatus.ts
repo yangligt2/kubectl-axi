@@ -53,6 +53,8 @@ export interface Pod {
   };
   spec?: {
     nodeName?: string;
+    nodeSelector?: Record<string, string>;
+    tolerations?: Array<{ key?: string; operator?: string; value?: string; effect?: string }>;
     containers?: ContainerSpec[];
     initContainers?: ContainerSpec[];
   };
@@ -140,6 +142,28 @@ export function podRestarts(pod: Pod): number {
     ...(pod.status?.containerStatuses ?? []),
   ];
   return statuses.reduce((sum, s) => sum + (s.restartCount ?? 0), 0);
+}
+
+/** The scheduler's reason a Pending pod can't be placed, or null if scheduled. */
+export function unschedulableMessage(pod: Pod): string | null {
+  const scheduled = pod.status?.conditions?.find(
+    (c) => c.type === "PodScheduled",
+  );
+  if (scheduled?.status === "False") {
+    return scheduled.message ?? scheduled.reason ?? "unschedulable";
+  }
+  return null;
+}
+
+/** nodeSelector as a "key=value,key=value" expression, or null if none. */
+export function nodeSelectorExpression(pod: Pod): string | null {
+  const selector = pod.spec?.nodeSelector;
+  if (!selector || Object.keys(selector).length === 0) {
+    return null;
+  }
+  return Object.entries(selector)
+    .map(([key, value]) => `${key}=${value}`)
+    .join(",");
 }
 
 /** One-word-ish container state: running / waiting: X / terminated: X (exit N). */

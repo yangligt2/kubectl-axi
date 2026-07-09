@@ -49,6 +49,7 @@ kubectl-axi logs <pod> -n <ns>  # last 100 lines, size-capped; hints --previous 
 kubectl-axi events -A --warnings       # events newest-first (fixes kubectl's unsorted default)
 kubectl-axi deploy              # deployments, degraded first (catches stuck rollouts at full replicas)
 kubectl-axi svc view <name> -n <ns>    # selector vs matching pods vs endpoints - diagnoses zero-endpoint services
+kubectl-axi pvc view <name> -n <ns>    # phase, storage class (existence-checked), mounting pods - diagnoses unbound PVCs
 kubectl-axi nodes               # readiness + pressure conditions
 kubectl-axi ctx                 # kubeconfig-local context/namespace (what the session hook prints)
 kubectl-axi setup hooks         # install SessionStart hooks (Claude Code, Codex, OpenCode)

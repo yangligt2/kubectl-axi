@@ -106,8 +106,13 @@ export function nodeIssues(node: KubeNode): NodeIssue[] {
 }
 
 export interface Pvc {
-  metadata: { name: string; namespace?: string };
-  spec?: { storageClassName?: string };
+  metadata: { name: string; namespace?: string; creationTimestamp?: string };
+  spec?: {
+    storageClassName?: string;
+    volumeName?: string;
+    accessModes?: string[];
+    resources?: { requests?: Record<string, string> };
+  };
   status?: { phase?: string };
 }
 

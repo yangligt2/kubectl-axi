@@ -15,6 +15,7 @@ import { triageCommand, TRIAGE_HELP } from "./commands/triage.js";
 import { deployCommand, DEPLOY_HELP } from "./commands/deploy.js";
 import { nodesCommand, NODES_HELP } from "./commands/nodes.js";
 import { svcCommand, SVC_HELP } from "./commands/svc.js";
+import { pvcCommand, PVC_HELP } from "./commands/pvc.js";
 import { ctxCommand, CTX_HELP } from "./commands/ctx.js";
 import { setupCommand, SETUP_HELP } from "./commands/setup.js";
 
@@ -30,8 +31,8 @@ type MainOptions = {
 };
 
 export const TOP_HELP = `usage: kubectl-axi [command] [args] [flags]
-commands[9]:
-  (none)=cluster snapshot, triage, pods, logs, events, deploy, nodes, svc, ctx, setup
+commands[10]:
+  (none)=cluster snapshot, triage, pods, logs, events, deploy, nodes, svc, pvc, ctx, setup
 flags[5]:
   -n/--namespace <ns> (after command), -A/--all-namespaces, --context <name>, --help, -v/-V/--version
 examples:
@@ -53,6 +54,7 @@ const COMMAND_HELP: Record<string, string> = {
   deploy: DEPLOY_HELP,
   nodes: NODES_HELP,
   svc: SVC_HELP,
+  pvc: PVC_HELP,
   ctx: CTX_HELP,
   setup: SETUP_HELP,
 };
@@ -67,6 +69,7 @@ const COMMANDS: Record<string, CommandFn> = {
   deploy: withKubeContext(deployCommand),
   nodes: withKubeContext(nodesCommand),
   svc: withKubeContext(svcCommand),
+  pvc: withKubeContext(pvcCommand),
   ctx: withKubeContext(ctxCommand),
   setup: setupCommand,
 };

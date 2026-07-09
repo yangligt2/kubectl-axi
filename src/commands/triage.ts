@@ -256,13 +256,18 @@ export async function triageCommand(
   }
 
   const ctxFlag = ctx?.context ? ` --context ${ctx.context}` : "";
-  const suggestions =
-    issueCount > 0
-      ? [
-          `Run \`kubectl-axi pods view <name> -n <ns>${ctxFlag}\` to diagnose a not-ready pod`,
-          `Run \`kubectl-axi logs <pod> -n <ns>${ctxFlag}\` (add --previous after crashes) for container output`,
-        ]
-      : [];
+  const suggestions: string[] = [];
+  if (issueCount > 0) {
+    suggestions.push(
+      `Run \`kubectl-axi pods view <name> -n <ns>${ctxFlag}\` to diagnose a not-ready pod`,
+      `Run \`kubectl-axi logs <pod> -n <ns>${ctxFlag}\` (add --previous after crashes) for container output`,
+    );
+    if (pvcs && (pvcs.items ?? []).some((pvc) => pvcPending(pvc))) {
+      suggestions.push(
+        `Run \`kubectl-axi pvc view <name> -n <ns>${ctxFlag}\` to see why a PVC is unbound (storage class checked)`,
+      );
+    }
+  }
 
   return renderOutput([headline, ...blocks, renderHelp(suggestions)]);
 }

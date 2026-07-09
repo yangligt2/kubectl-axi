@@ -35,8 +35,8 @@ Use kubectl-axi whenever a task involves diagnosing Kubernetes state: pods crash
 ## Commands
 
 ```
-commands[9]:
-  (none)=cluster snapshot, triage, pods, logs, events, deploy, nodes, svc, ctx, setup
+commands[10]:
+  (none)=cluster snapshot, triage, pods, logs, events, deploy, nodes, svc, pvc, ctx, setup
 ```
 
 Installed copies also inherit the SDK built-in `update` command.
