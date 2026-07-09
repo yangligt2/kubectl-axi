@@ -4,12 +4,34 @@ import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
 import { precheck, runOne } from "./runner.js";
 import { writeReports } from "./reporter.js";
-import type { ConditionDef, TaskDef } from "./types.js";
+import type { AgentBackend, ConditionDef, TaskDef } from "./types.js";
 
 const BENCH_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const REPO_ROOT = join(BENCH_ROOT, "..");
 const RESULTS_DIR = join(BENCH_ROOT, "results");
-const DEFAULT_MODEL = "claude-sonnet-4-6";
+const DEFAULT_MODEL: Record<AgentBackend, string> = {
+  claude: "claude-sonnet-4-6",
+  gemini: "gemini-3.5-flash",
+};
 const DEFAULT_REPEAT = 1;
+
+/** Load KEY=VALUE lines from the repo's .env.local (e.g. GEMINI_API_KEY)
+ * without overriding anything already set in the environment. */
+function loadEnvLocal(): void {
+  const file = join(REPO_ROOT, ".env.local");
+  if (!existsSync(file)) return;
+  for (const line of readFileSync(file, "utf-8").split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq === -1) continue;
+    const key = trimmed.slice(0, eq).trim();
+    const value = trimmed.slice(eq + 1).trim();
+    if (key && process.env[key] === undefined) {
+      process.env[key] = value;
+    }
+  }
+}
 
 function loadConditions(): Map<string, ConditionDef> {
   const raw = parse(readFileSync(join(BENCH_ROOT, "conditions.yaml"), "utf-8"));
@@ -79,7 +101,14 @@ function executeRuns(
   tasks: TaskDef[],
   repeat: number,
   model: string,
+  agent: AgentBackend,
 ): void {
+  loadEnvLocal();
+  if (agent === "gemini" && !process.env.GEMINI_API_KEY) {
+    throw new Error(
+      "GEMINI_API_KEY is not set (put it in .env.local or the environment) for --agent gemini",
+    );
+  }
   const kubeconfig = resolveKubeconfig();
   const needsAxi = conditions.some((c) => c.tool === "kubectl-axi");
   precheck(kubeconfig, needsAxi);
@@ -90,9 +119,9 @@ function executeRuns(
     for (const task of shuffle(tasks)) {
       for (let run = 1; run <= repeat; run++) {
         done++;
-        console.log(`[${done}/${total}] ${condition.id} × ${task.id} run${run}`);
+        console.log(`[${done}/${total}] ${agent} ${condition.id} × ${task.id} run${run}`);
         const result = runOne(
-          { condition, task, run, model, kubeconfig },
+          { condition, task, run, model, agent, kubeconfig },
           RESULTS_DIR,
         );
         console.log(
@@ -112,18 +141,20 @@ const args = parseArgs(rest);
 switch (command) {
   case "run": {
     if (!args.condition || !args.task) {
-      console.error("usage: bench run --condition <id> --task <id> [--repeat N] [--model M]");
+      console.error("usage: bench run --condition <id> --task <id> [--repeat N] [--agent claude|gemini] [--model M]");
       process.exit(2);
     }
+    const agent = (args.agent ?? "claude") as AgentBackend;
     const conditions = pick(loadConditions(), args.condition, "condition");
     const tasks = pick(loadTasks(), args.task, "task");
-    executeRuns(conditions, tasks, Number(args.repeat ?? DEFAULT_REPEAT), args.model ?? DEFAULT_MODEL);
+    executeRuns(conditions, tasks, Number(args.repeat ?? DEFAULT_REPEAT), args.model ?? DEFAULT_MODEL[agent], agent);
     break;
   }
   case "matrix": {
+    const agent = (args.agent ?? "claude") as AgentBackend;
     const conditions = pick(loadConditions(), args.condition, "condition");
     const tasks = pick(loadTasks(), args.task, "task");
-    executeRuns(conditions, tasks, Number(args.repeat ?? DEFAULT_REPEAT), args.model ?? DEFAULT_MODEL);
+    executeRuns(conditions, tasks, Number(args.repeat ?? DEFAULT_REPEAT), args.model ?? DEFAULT_MODEL[agent], agent);
     console.log(writeReports(RESULTS_DIR));
     break;
   }
@@ -133,8 +164,8 @@ switch (command) {
   }
   default:
     console.error(`usage: bench <run|matrix|report>
-  run    --condition <id[,id]> --task <id[,id]> [--repeat N] [--model M]
-  matrix [--condition <id[,id]>] [--task <id[,id]>] [--repeat N] [--model M]
+  run    --condition <id[,id]> --task <id[,id]> [--repeat N] [--agent claude|gemini] [--model M]
+  matrix [--condition <id[,id]>] [--task <id[,id]>] [--repeat N] [--agent claude|gemini] [--model M]
   report`);
     process.exit(2);
 }

@@ -126,8 +126,7 @@ function extractVerdict(output: string): { pass: boolean; reason: string } | nul
   return null;
 }
 
-export function grade(task: TaskDef, agentJsonl: string): GradeResult {
-  const trajectory = formatTrajectory(agentJsonl);
+export function grade(task: TaskDef, trajectory: string): GradeResult {
   const prompt = buildJudgePrompt(task, trajectory);
 
   for (let attempt = 0; attempt <= MAX_JUDGE_RETRIES; attempt++) {

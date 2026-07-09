@@ -19,10 +19,13 @@ export interface TaskDef {
   grading?: { grading_hint?: string };
 }
 
+export type AgentBackend = "claude" | "gemini";
+
 export interface RunSpec {
   condition: ConditionDef;
   task: TaskDef;
   run: number;
+  agent: AgentBackend;
   model: string;
   kubeconfig: string;
 }
@@ -54,6 +57,7 @@ export interface RunResult {
   condition: string;
   task: string;
   run: number;
+  agent: AgentBackend;
   model: string;
   timestamp: string;
   usage: UsageMetrics;

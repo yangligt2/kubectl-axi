@@ -77,9 +77,12 @@ Releases are cut by [release-please](https://github.com/googleapis/release-pleas
 
 ```sh
 pnpm run bench -- run --condition kubectl-axi --task diagnose_oom
-pnpm run bench -- matrix --repeat 5     # full run: all conditions × all tasks
-pnpm run bench -- report                # aggregate bench/results/ into report.md
+pnpm run bench -- matrix --repeat 5                       # all conditions × all tasks (Claude)
+pnpm run bench -- matrix --agent gemini --condition kubectl-axi   # Gemini backend
+pnpm run bench -- report                                  # aggregate bench/results/ into report.md
 ```
+
+The agent backend is selectable with `--agent claude` (default) or `--agent gemini`; the LLM judge is always Claude so grading stays comparable across agents. The Gemini backend reads `GEMINI_API_KEY` from `.env.local` (gitignored) and delivers condition guidance via a workspace `GEMINI.md`. The Gemini CLI reports token counts but not cost, so cost is derived from an approximate per-token rate in `bench/src/gemini.ts` - verify it against current pricing before quoting dollar figures.
 
 ### Fixture cluster
 
