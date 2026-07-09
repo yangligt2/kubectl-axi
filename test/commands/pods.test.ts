@@ -236,6 +236,7 @@ describe("podsCommand", () => {
       pod.spec!.containers![0].readinessProbe = {
         httpGet: { path: "/healthz", port: 8080 },
       };
+      pod.spec!.containers![0].resources = { limits: { memory: "25Mi" } };
 
       const oldTime = new Date(Date.now() - 60 * 60 * 1000).toISOString();
       const newTime = new Date(Date.now() - 60 * 1000).toISOString();
@@ -271,6 +272,7 @@ describe("podsCommand", () => {
       expect(result).toContain("status: CrashLoopBackOff");
       expect(result).toContain("OOMKilled (exit 137");
       expect(result).toContain("http :8080/healthz");
+      expect(result).toContain("memory=25Mi");
       // events sorted newest first
       expect(result.indexOf("BackOff")).toBeLessThan(
         result.indexOf("Scheduled"),

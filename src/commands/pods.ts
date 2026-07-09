@@ -11,6 +11,7 @@ import {
   containerStateString,
   isNotReady,
   lastStateString,
+  limitsSummary,
   podReady,
   podRestarts,
   podStatus,
@@ -207,6 +208,7 @@ async function viewPod(args: string[], ctx?: KubeContext): Promise<string> {
           restarts: status?.restartCount ?? 0,
           last_state: status ? lastStateString(status) : "none",
           readiness: probeSummary(spec),
+          limits: limitsSummary(spec),
         };
       }),
     }),

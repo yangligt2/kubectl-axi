@@ -16,6 +16,10 @@ export interface ContainerSpec {
   name: string;
   image?: string;
   readinessProbe?: Probe;
+  resources?: {
+    limits?: Record<string, string>;
+    requests?: Record<string, string>;
+  };
 }
 
 export interface ContainerState {
@@ -162,6 +166,18 @@ export function lastStateString(status: ContainerStatus): string {
   }
   const when = t.finishedAt ? `, ${formatRelativeTime(t.finishedAt)}` : "";
   return `${t.reason ?? "Error"} (exit ${t.exitCode ?? "?"}${when})`;
+}
+
+/** Compact resource-limit summary: "memory=25Mi,cpu=100m" or "none". OOM
+ * diagnosis needs the limit next to the OOMKilled termination reason. */
+export function limitsSummary(spec: ContainerSpec | undefined): string {
+  const limits = spec?.resources?.limits;
+  if (!limits || Object.keys(limits).length === 0) {
+    return "none";
+  }
+  return Object.entries(limits)
+    .map(([key, value]) => `${key}=${value}`)
+    .join(",");
 }
 
 /** Compact readiness probe summary: "http :8080/healthz", "tcp :5432", "exec", "none". */
