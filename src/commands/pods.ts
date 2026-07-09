@@ -228,6 +228,13 @@ async function viewPod(args: string[], ctx?: KubeContext): Promise<string> {
           ready: status?.ready ? "yes" : "no",
           restarts: status?.restartCount ?? 0,
           last_state: status ? lastStateString(status) : "none",
+          // Declared ports sit next to the probe target so port/probe
+          // mismatches are visible without pulling the deployment spec.
+          ports:
+            (spec.ports ?? [])
+              .map((p) => p.containerPort)
+              .filter((p) => p !== undefined)
+              .join(",") || "none",
           readiness: probeSummary(spec),
           limits: limitsSummary(spec),
         };

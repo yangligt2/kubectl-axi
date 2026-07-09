@@ -15,6 +15,7 @@ export interface Probe {
 export interface ContainerSpec {
   name: string;
   image?: string;
+  ports?: Array<{ containerPort?: number }>;
   readinessProbe?: Probe;
   resources?: {
     limits?: Record<string, string>;
@@ -48,6 +49,7 @@ export interface Pod {
   metadata: {
     name: string;
     namespace?: string;
+    labels?: Record<string, string>;
     creationTimestamp?: string;
     deletionTimestamp?: string;
   };

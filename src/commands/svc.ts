@@ -168,9 +168,32 @@ async function viewSvc(args: string[], ctx?: KubeContext): Promise<string> {
       blocks.push(
         `diagnosis: selector "${selector}" matches 0 pods - the selector does not match any pod labels in this namespace`,
       );
-      suggestions.push(
-        `Run \`kubectl-axi pods${nsFlag}${ctxFlag}\` and compare pod labels against the selector`,
-      );
+      // Show the labels that DO exist so the mismatch is nameable in one
+      // call, without a raw-kubectl --show-labels fallback.
+      const nsPods = await kubectlJson<PodList>(
+        ["get", "pods", "-o", "json"],
+        ctx,
+      ).catch(() => ({ items: [] }) as PodList);
+      const labelCounts = new Map<string, number>();
+      for (const pod of nsPods.items ?? []) {
+        const expr =
+          Object.entries(pod.metadata.labels ?? {})
+            .map(([key, value]) => `${key}=${value}`)
+            .sort()
+            .join(",") || "(no labels)";
+        labelCounts.set(expr, (labelCounts.get(expr) ?? 0) + 1);
+      }
+      if (labelCounts.size > 0) {
+        blocks.push(
+          encode({
+            pod_labels_in_namespace: [...labelCounts.entries()].map(
+              ([labels, count]) => ({ labels, pods: count }),
+            ),
+          }),
+        );
+      } else {
+        blocks.push("pod_labels_in_namespace: no pods exist in this namespace");
+      }
     } else {
       const rows = pods.map((pod) => ({
         name: pod.metadata.name,

@@ -100,7 +100,7 @@ async function viewPvc(args: string[], ctx?: KubeContext): Promise<string> {
   const clusterScope = ctx?.context
     ? { context: ctx.context, allNamespaces: false }
     : undefined;
-  const [scExists, pods] = await Promise.all([
+  const [scExists, pods, storageClassNames] = await Promise.all([
     storageClass
       ? kubectlRaw(["get", "storageclass", storageClass], clusterScope).then(
           (r) => r.exitCode === 0,
@@ -109,16 +109,13 @@ async function viewPvc(args: string[], ctx?: KubeContext): Promise<string> {
     kubectlJson<PodList>(["get", "pods", "-o", "json"], ctx).catch(
       () => ({ items: [] }) as PodList,
     ),
+    kubectlJson<StorageClassList>(
+      ["get", "storageclass", "-o", "json"],
+      clusterScope,
+    )
+      .then((l) => (l.items ?? []).map((s) => s.metadata.name))
+      .catch(() => [] as string[]),
   ]);
-
-  const storageClassNames = storageClass
-    ? undefined
-    : await kubectlJson<StorageClassList>(
-        ["get", "storageclass", "-o", "json"],
-        clusterScope,
-      )
-        .then((l) => (l.items ?? []).map((s) => s.metadata.name))
-        .catch(() => [] as string[]);
 
   const mountingPods = (pods.items ?? [])
     .filter((pod) =>
@@ -143,8 +140,12 @@ async function viewPvc(args: string[], ctx?: KubeContext): Promise<string> {
   ];
 
   if (storageClass && !scExists) {
+    const available =
+      storageClassNames.length > 0
+        ? `available storage classes: ${truncate(storageClassNames.join(","), 120)}`
+        : "no storage classes exist in this cluster";
     blocks.push(
-      `diagnosis: storage class "${storageClass}" does not exist, so this PVC can never bind${storageClassNames && storageClassNames.length > 0 ? ` (available: ${truncate(storageClassNames.join(","), 120)})` : ""}`,
+      `diagnosis: storage class "${storageClass}" does not exist, so this PVC can never bind (${available})`,
     );
   }
 
