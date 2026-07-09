@@ -8,6 +8,9 @@ export interface ConditionDef {
   name: string;
   tool: string;
   agents_md: string;
+  /** Optional file (relative to bench/) whose content is appended to
+   * agents_md - lets a condition use the installable SKILL.md verbatim. */
+  agents_md_file?: string;
   mcp_config?: { mcpServers: Record<string, unknown> };
   command_policy?: CommandPolicy;
 }

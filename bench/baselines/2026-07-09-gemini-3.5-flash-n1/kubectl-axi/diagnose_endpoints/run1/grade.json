@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent correctly identified the root cause: the service selector 'app=web-backend-v2' does not match the pod labels 'app=web-backend', resulting in zero endpoints. This was confirmed by running kubectl-axi commands against the cluster (svc view showed selector and 0 endpoints, pods view showed the actual labels), and further verified via direct API queries. The diagnosis is accurate and complete.",
+  "judge_model": "claude-sonnet-4-6"
+}

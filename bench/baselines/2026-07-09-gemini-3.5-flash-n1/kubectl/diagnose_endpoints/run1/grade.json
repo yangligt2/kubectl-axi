@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, observed empty endpoints, inspected the service YAML (selector: app=web-backend-v2) and pod labels (app=web-backend), and correctly identified the label selector mismatch as the root cause. The diagnosis is accurate, specific, and fully supported by the command output.",
+  "judge_model": "claude-sonnet-4-6"
+}

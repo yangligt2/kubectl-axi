@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran diagnostic commands against the cluster (pods list, pod view, logs, deploy view) and correctly identified the root cause: the readiness probe targets port 8080 with path /healthz, but nginx listens on port 80. The agent explicitly stated this port mismatch and supported it with the 'connection refused' event evidence from the cluster.",
+  "judge_model": "claude-sonnet-4-6"
+}

@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl get nodes and kubectl describe node commands, observed all conditions (Ready=True, MemoryPressure=False, DiskPressure=False, PIDPressure=False, Unschedulable=false), and confidently reported the node as healthy with no resource pressure. The answer is accurate, complete, and grounded in actual cluster inspection.",
+  "judge_model": "claude-sonnet-4-6"
+}

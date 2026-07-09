@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran commands against the cluster (kubectl-axi triage, pods view, pvc view) and correctly traced the full chain: pod db-5bfcfcd584-jcf6z is Unschedulable → because PVC 'data-cache' is unbound → because StorageClass 'fast-ssd' does not exist in the cluster. The pvc view output explicitly confirmed 'storage class fast-ssd does not exist, so this PVC can never bind' with a ProvisioningFailed event. The agent reported all three links in the required chain.",
+  "judge_model": "claude-sonnet-4-6"
+}

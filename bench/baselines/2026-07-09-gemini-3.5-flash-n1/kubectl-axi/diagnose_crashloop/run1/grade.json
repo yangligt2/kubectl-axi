@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent systematically investigated the fault-crashloop namespace, identified the crashing pod api-5bb6467d5-6dbzv, retrieved both previous and current container logs, and correctly quoted the exact error message: 'FATAL: cannot connect to database db.internal:5432 - connection refused'. The diagnosis is accurate and supported by actual command outputs.",
+  "judge_model": "claude-sonnet-4-6"
+}

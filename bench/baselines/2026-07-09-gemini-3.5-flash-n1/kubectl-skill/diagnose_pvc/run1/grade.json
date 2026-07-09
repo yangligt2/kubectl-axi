@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, observed the pod in Pending state, traced it to the unbound PVC 'data-cache', then followed the PVC events to discover that StorageClass 'fast-ssd' does not exist (only 'standard' is available). The full chain pod -> unbound PVC -> nonexistent StorageClass 'fast-ssd' was correctly identified and reported.",
+  "judge_model": "claude-sonnet-4-6"
+}

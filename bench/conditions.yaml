@@ -18,21 +18,15 @@ conditions:
   kubectl-axi:
     name: "kubectl-axi (AXI wrapper)"
     tool: kubectl-axi
+    # Guidance = the real installable SKILL.md (the realistic deployment:
+    # a user who installed the skill), preceded by this preamble.
     agents_md: |
       # Tools
 
-      You have the `kubectl-axi` CLI installed for Kubernetes troubleshooting.
-      Use it for all Kubernetes operations - do not call `kubectl` directly.
-      It is read-only and provides structured output with pre-computed
-      summaries.
-
-      Examples:
-      - `kubectl-axi triage`                    # one-call cluster health scan
-      - `kubectl-axi pods -n <ns>`              # pods, not-ready sorted first
-      - `kubectl-axi pods view <name> -n <ns>`  # containers, probes, events
-      - `kubectl-axi logs <pod> -n <ns>`        # logs (--previous after crashes)
-      - `kubectl-axi svc view <name> -n <ns>`   # selector vs endpoints
-      - `kubectl-axi <command> --help`          # per-command usage
+      You have the `kubectl-axi` CLI installed globally for Kubernetes
+      troubleshooting. Use it for all Kubernetes operations - do not call
+      `kubectl` directly.
+    agents_md_file: ../skills/kubectl-axi/SKILL.md
     command_policy:
       require_any_prefix: ["kubectl-axi"]
       forbid_any_prefix: ["kubectl "]

@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran `kubectl-axi nodes` and `kubectl-axi nodes view kubectl-axi-bench-control-plane` to inspect the node, confirmed all four conditions (MemoryPressure=False, DiskPressure=False, PIDPressure=False, Ready=True), and reported confidently that the single node is healthy with no pressure or taints.",
+  "judge_model": "claude-sonnet-4-6"
+}

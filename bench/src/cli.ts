@@ -37,7 +37,22 @@ function loadConditions(): Map<string, ConditionDef> {
   const raw = parse(readFileSync(join(BENCH_ROOT, "conditions.yaml"), "utf-8"));
   const map = new Map<string, ConditionDef>();
   for (const [id, def] of Object.entries(raw.conditions as Record<string, Omit<ConditionDef, "id">>)) {
-    map.set(id, { ...def, id });
+    const condition: ConditionDef = { ...def, id };
+    if (condition.agents_md_file) {
+      // The skill teaches `npx -y kubectl-axi` for skill-only installs; the
+      // bench host has the binary on PATH, so use the direct form (also
+      // keeps the command policy's require-prefix check meaningful).
+      const fileContent = readFileSync(
+        join(BENCH_ROOT, condition.agents_md_file),
+        "utf-8",
+      )
+        .replace(/^---\n[\s\S]*?\n---\n/, "") // strip skill frontmatter
+        .replaceAll("npx -y kubectl-axi", "kubectl-axi");
+      condition.agents_md = [condition.agents_md ?? "", fileContent]
+        .filter(Boolean)
+        .join("\n\n");
+    }
+    map.set(id, condition);
   }
   return map;
 }
