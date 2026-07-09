@@ -71,6 +71,16 @@ pnpm run build:skill # regenerate skills/kubectl-axi/SKILL.md (CI fails if it dr
 
 Releases are cut by [release-please](https://github.com/googleapis/release-please) from conventional commits on `main`; merging the release PR publishes to npm with OIDC provenance. Do not hand-edit `CHANGELOG.md` or `.release-please-manifest.json` - a guard workflow blocks PRs that touch them.
 
+### Benchmark harness
+
+`bench/` compares agent performance across access conditions - `kubectl` (raw), `kubectl-axi`, `kubectl-skill` (efficiency guidance only), and `k8s-mcp` (MCP server) - over the 14 troubleshooting tasks in [bench/tasks.yaml](bench/tasks.yaml), graded by an LLM judge. Requires the fixture cluster up (below), the `claude` CLI (agent and judge auth ride on your local login), and `kubectl-axi` on PATH for the axi condition (`npm i -g .`).
+
+```sh
+pnpm run bench -- run --condition kubectl-axi --task diagnose_oom
+pnpm run bench -- matrix --repeat 5     # full run: all conditions × all tasks
+pnpm run bench -- report                # aggregate bench/results/ into report.md
+```
+
 ### Fixture cluster
 
 The dev/benchmark environment is a kind cluster seeded with 12 fixtures ([fixtures/faults/](fixtures/faults/)): crash loops, OOM kills, image pull failures, probe misconfigurations, stuck rollouts, selector mismatches, and one healthy namespace as the definitive-negative control. [bench/tasks.yaml](bench/tasks.yaml) defines the troubleshooting tasks graded against them.

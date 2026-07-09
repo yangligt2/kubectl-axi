@@ -1,0 +1,79 @@
+# Benchmark conditions - each defines how the agent accesses the cluster.
+# The agent runs with KUBECONFIG pointed at the fixture cluster (current
+# context kind-kubectl-axi-bench), so no condition needs --context flags.
+
+conditions:
+  kubectl:
+    name: "kubectl (raw)"
+    tool: kubectl
+    agents_md: |
+      # Tools
+
+      You have `kubectl` installed and configured for the target cluster.
+      Use it for all Kubernetes operations. Do NOT use any other Kubernetes
+      tooling.
+    command_policy:
+      forbid_any_prefix: ["kubectl-axi", "npx -y kubectl-axi", "npx kubectl-axi"]
+
+  kubectl-axi:
+    name: "kubectl-axi (AXI wrapper)"
+    tool: kubectl-axi
+    agents_md: |
+      # Tools
+
+      You have the `kubectl-axi` CLI installed for Kubernetes troubleshooting.
+      Use it for all Kubernetes operations - do not call `kubectl` directly.
+      It is read-only and provides structured output with pre-computed
+      summaries.
+
+      Examples:
+      - `kubectl-axi triage`                    # one-call cluster health scan
+      - `kubectl-axi pods -n <ns>`              # pods, not-ready sorted first
+      - `kubectl-axi pods view <name> -n <ns>`  # containers, probes, events
+      - `kubectl-axi logs <pod> -n <ns>`        # logs (--previous after crashes)
+      - `kubectl-axi svc view <name> -n <ns>`   # selector vs endpoints
+      - `kubectl-axi <command> --help`          # per-command usage
+    command_policy:
+      require_any_prefix: ["kubectl-axi"]
+      forbid_any_prefix: ["kubectl "]
+
+  kubectl-skill:
+    name: "kubectl + efficiency skill (guidance only)"
+    tool: kubectl
+    agents_md: |
+      # Tools
+
+      You have `kubectl` installed and configured for the target cluster.
+      Use it for all Kubernetes operations, following these practices:
+
+      - Sort events by time: `kubectl get events --sort-by=.lastTimestamp`
+        (the default order is NOT chronological).
+      - For crash-looping containers, check `kubectl logs <pod> --previous`
+        to see output from before the last restart.
+      - Multi-container pods need `-c <container>`; init containers have
+        their own logs.
+      - Prefer `-o custom-columns=...` or `-o jsonpath=...` over dumping
+        full YAML/JSON.
+      - A service with no endpoints usually means its selector does not
+        match pod labels: compare `kubectl get endpoints <svc>` with pod
+        labels.
+      - Deployment READY columns can look healthy while a rollout is stuck;
+        check the Progressing condition in `kubectl describe deploy`.
+    command_policy:
+      forbid_any_prefix: ["kubectl-axi", "npx -y kubectl-axi", "npx kubectl-axi"]
+
+  k8s-mcp:
+    name: "Kubernetes MCP server"
+    tool: mcp
+    agents_md: |
+      # Tools
+
+      You have a Kubernetes MCP server registered with tools for cluster
+      operations. Use those MCP tools for all Kubernetes operations.
+    mcp_config:
+      mcpServers:
+        kubernetes:
+          command: "npx"
+          args: ["-y", "mcp-server-kubernetes"]
+          env:
+            ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS: "true"

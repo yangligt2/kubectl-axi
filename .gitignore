@@ -4,6 +4,9 @@ node_modules/
 # Build output
 dist/
 
+# Benchmark run artifacts (published results are committed separately)
+bench/results/
+
 # Local environment (remote host names, fetched kubeconfig, tunnel socket)
 .env.local
 .kube/

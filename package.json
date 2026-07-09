@@ -37,6 +37,7 @@
   "scripts": {
     "build": "tsc",
     "build:skill": "tsx scripts/build-skill.ts",
+    "bench": "tsx bench/src/cli.ts",
     "dev": "tsx bin/kubectl-axi.ts",
     "test": "vitest run",
     "test:watch": "vitest",
