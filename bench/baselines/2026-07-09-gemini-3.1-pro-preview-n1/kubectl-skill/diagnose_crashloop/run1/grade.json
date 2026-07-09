@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent correctly identified the failing pod, retrieved its logs using both current and --previous flags, and quoted the exact error message: 'FATAL: cannot connect to database db.internal:5432 - connection refused'. The diagnosis is complete and accurate.",
+  "judge_model": "claude-sonnet-4-6"
+}

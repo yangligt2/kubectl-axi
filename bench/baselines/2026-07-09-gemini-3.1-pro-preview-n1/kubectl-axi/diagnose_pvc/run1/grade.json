@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent traced the complete chain: pod (Unschedulable) -> unbound PVC 'data-cache' (Pending) -> nonexistent StorageClass 'fast-ssd'. Each step was confirmed by running actual kubectl-axi commands against the cluster, and the final diagnosis correctly identifies the missing StorageClass as the root cause.",
+  "judge_model": "claude-sonnet-4-6"
+}

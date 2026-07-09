@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, confirmed the last termination reason as OOMKilled via jsonpath query, retrieved the memory limit of 25Mi, and produced a correct, complete answer attributing the restarts to OOM kills with the exact memory limit specified.",
+  "judge_model": "claude-sonnet-4-6"
+}

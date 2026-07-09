@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl get pods and kubectl describe pod commands against the cluster, correctly identified the last termination reason as OOMKilled, and reported the memory limit as 25Mi. Both required facts are present and accurate.",
+  "judge_model": "claude-sonnet-4-6"
+}

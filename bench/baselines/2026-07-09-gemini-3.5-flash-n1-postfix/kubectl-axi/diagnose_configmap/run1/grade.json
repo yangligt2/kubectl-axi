@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl-axi triage and kubectl-axi pods view commands against the cluster, which returned evidence showing CreateContainerConfigError and the specific error message 'configmap \"app-config\" not found'. The agent correctly identified the root cause as the missing ConfigMap named 'app-config' and named it explicitly in the final answer.",
+  "judge_model": "claude-sonnet-4-6"
+}

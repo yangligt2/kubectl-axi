@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster for every namespace and correctly identified all 11 fault namespaces with accurate root-cause categories: fault-configmap (missing ConfigMap), fault-crashloop (app crash/DB connection refused), fault-endpoints (mismatched service selector app:web-backend-v2 vs app:web-backend), fault-imagepull (non-existent image tag), fault-init (init container crash due to locked migration table), fault-multicontainer (sidecar DNS resolution failure), fault-oom (OOMKilled/memory limit exceeded), fault-pvc (missing StorageClass fast-ssd), fault-readiness (readiness probe connection refused), fault-rollout (stuck rollout due to bad image tag), fault-unschedulable (node selector disktype:ssd-nvme-gen5 not matched). The healthy namespace was not flagged. All diagnoses are supported by actual command output.",
+  "judge_model": "claude-sonnet-4-6"
+}

@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran the correct commands (kubectl get pods, kubectl describe pod, kubectl get nodes --show-labels) and correctly identified the root cause: the pod has a nodeSelector requiring disktype=ssd-nvme-gen5, but no node in the cluster has that label. The diagnosis is accurate, complete, and supported by the command output.",
+  "judge_model": "claude-sonnet-4-6"
+}

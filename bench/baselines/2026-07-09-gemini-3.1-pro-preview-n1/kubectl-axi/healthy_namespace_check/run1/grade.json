@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran triage, pods, and deploy commands against the cluster, found no issues, and confidently reported that everything is healthy with no hedging or invented problems.",
+  "judge_model": "claude-sonnet-4-6"
+}

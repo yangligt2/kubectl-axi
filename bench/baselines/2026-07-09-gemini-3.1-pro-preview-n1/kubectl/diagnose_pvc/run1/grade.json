@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent correctly traced the full chain: pod db-5bfcfcd584-jcf6z is Pending → PVC data-cache is Pending due to ProvisioningFailed → StorageClass 'fast-ssd' does not exist in the cluster (only 'standard' exists). All three levels of the causal chain were identified with supporting kubectl commands and actual cluster output.",
+  "judge_model": "claude-sonnet-4-6"
+}

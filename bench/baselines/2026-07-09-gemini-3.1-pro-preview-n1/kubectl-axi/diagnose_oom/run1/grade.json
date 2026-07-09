@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl-axi commands against the cluster and correctly identified both required facts: the pod is being killed due to OOMKilled (last termination reason) and the memory limit is 25Mi. The agent explicitly attributed the restarts to OOM killing, not an application crash.",
+  "judge_model": "claude-sonnet-4-6"
+}

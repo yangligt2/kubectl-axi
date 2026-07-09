@@ -9,6 +9,7 @@ const GEMINI_PRICING: Record<
   { input: number; cached: number; output: number }
 > = {
   "gemini-3.5-flash": { input: 0.3, cached: 0.075, output: 2.5 },
+  "gemini-3.1-pro-preview": { input: 2.0, cached: 0.5, output: 12.0 },
 };
 
 const SHELL_TOOL = "run_shell_command";

@@ -1,0 +1,6 @@
+{
+  "task_success": false,
+  "details": "judge output unparseable: Error: Reached max turns (1)",
+  "failure_reason": "judge_parse_error",
+  "judge_model": "claude-sonnet-4-6"
+}

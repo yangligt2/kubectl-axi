@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, identified the rollout as stuck with ProgressDeadlineExceeded, correctly identified that the new ReplicaSet pod is in ImagePullBackOff due to the non-existent image 'nginx:2.0-does-not-exist', and correctly explained that the old v1 pods remain running and serving traffic. All required facts are present and accurate.",
+  "judge_model": "claude-sonnet-4-6"
+}

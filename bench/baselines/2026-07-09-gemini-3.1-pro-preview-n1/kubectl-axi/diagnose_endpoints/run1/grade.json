@@ -1,0 +1,5 @@
+{
+  "task_success": false,
+  "details": "command used forbidden tooling: kubectl get deploy -n fault-endpoints -o yaml | grep -A 5 labels",
+  "failure_reason": "policy_violation"
+}
