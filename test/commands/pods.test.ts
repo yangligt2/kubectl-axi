@@ -292,6 +292,7 @@ describe("podsCommand", () => {
         if (args.includes("events")) return { items: [] };
         return pod;
       });
+      mockedExec.mockResolvedValue(""); // no nodes match the selector
 
       const result = await podsCommand(["view", "search-indexer"], {
         namespace: "fault-unschedulable",
@@ -300,7 +301,47 @@ describe("podsCommand", () => {
 
       expect(result).toContain("scheduling:");
       expect(result).toContain("node_selector: disktype=ssd-nvme-gen5");
+      expect(result).toContain("nodes_matching_selector: 0");
       expect(result).toContain("0/1 nodes are available");
+      expect(mockedExec).toHaveBeenCalledWith(
+        ["get", "nodes", "-l", "disktype=ssd-nvme-gen5", "-o", "name"],
+        undefined,
+      );
+    });
+
+    it("cross-checks missing configmaps on CreateContainerConfigError", async () => {
+      const pod = makePod({
+        name: "worker-1",
+        namespace: "fault-configmap",
+        ready: false,
+        waitingReason: "CreateContainerConfigError",
+      });
+      pod.spec!.containers![0].envFrom = [
+        { configMapRef: { name: "app-config" } },
+      ];
+
+      mockedJson.mockImplementation(async (args: string[]) => {
+        if (args.includes("events")) return { items: [] };
+        return pod;
+      });
+      mockedRaw.mockResolvedValue({
+        stdout: "",
+        stderr: 'Error from server (NotFound): configmaps "app-config" not found',
+        exitCode: 1,
+      });
+
+      const result = await podsCommand(["view", "worker-1"], {
+        namespace: "fault-configmap",
+        allNamespaces: false,
+      });
+
+      expect(result).toContain(
+        'configmap "app-config" referenced by this pod does not exist',
+      );
+      expect(mockedRaw).toHaveBeenCalledWith(
+        ["get", "configmap", "app-config"],
+        expect.objectContaining({ namespace: "fault-configmap" }),
+      );
     });
 
     it("prints a definitive line when the pod has no events", async () => {

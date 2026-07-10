@@ -70,7 +70,11 @@ export function deploymentHealth(deploy: Deployment): DeploymentHealth {
 }
 
 export interface KubeNode {
-  metadata: { name: string; creationTimestamp?: string };
+  metadata: {
+    name: string;
+    labels?: Record<string, string>;
+    creationTimestamp?: string;
+  };
   status?: {
     conditions?: WorkloadCondition[];
     capacity?: Record<string, string>;

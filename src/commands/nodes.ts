@@ -113,6 +113,12 @@ async function viewNode(args: string[], ctx?: KubeContext): Promise<string> {
         cpu: node.status?.allocatable?.["cpu"] ?? "",
         memory: node.status?.allocatable?.["memory"] ?? "",
         max_pods: node.status?.allocatable?.["pods"] ?? "",
+        // Labels answer "which nodeSelectors can this node satisfy" without
+        // a raw `kubectl get node --show-labels` fallback.
+        labels:
+          Object.entries(node.metadata.labels ?? {})
+            .map(([key, value]) => `${key}=${value}`)
+            .join(",") || "none",
       },
     }),
     encode({

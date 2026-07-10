@@ -17,6 +17,7 @@ import {
   podRestarts,
   podStatus,
   probeSummary,
+  referencedConfig,
   unschedulableMessage,
   type ContainerStatus,
   type Pod,
@@ -186,11 +187,25 @@ async function viewPod(args: string[], ctx?: KubeContext): Promise<string> {
   const unschedulable = unschedulableMessage(pod);
   if (unschedulable) {
     const selector = nodeSelectorExpression(pod);
+    // Count nodes satisfying the selector so "no node carries this label"
+    // is proven here, not via a raw `kubectl get nodes --show-labels`.
+    let matchingNodes: number | null = null;
+    if (selector) {
+      matchingNodes = await kubectlExec(
+        ["get", "nodes", "-l", selector, "-o", "name"],
+        ctx?.context ? { context: ctx.context, allNamespaces: false } : undefined,
+      )
+        .then((out) => (out.trim() ? out.trim().split("\n").length : 0))
+        .catch(() => null);
+    }
     blocks.push(
       encode({
         scheduling: {
           reason: unschedulable,
           node_selector: selector ?? "none",
+          ...(matchingNodes !== null
+            ? { nodes_matching_selector: matchingNodes }
+            : {}),
           tolerations: (pod.spec?.tolerations ?? [])
             .map((t) => t.key ?? "*")
             .join(",") || "none",
@@ -241,6 +256,35 @@ async function viewPod(args: string[], ctx?: KubeContext): Promise<string> {
       }),
     }),
   );
+
+  // CreateContainerConfigError means a referenced ConfigMap/Secret is bad;
+  // cross-check existence so the diagnosis is definitive in this one call
+  // (same pattern as pvc view's storage-class check).
+  const hasConfigError = [
+    ...initStatuses,
+    ...(pod.status?.containerStatuses ?? []),
+  ].some((s) => s.state?.waiting?.reason === "CreateContainerConfigError");
+  if (hasConfigError) {
+    const refs = referencedConfig(pod);
+    const checks = await Promise.all([
+      ...refs.configmaps.map(async (name) => ({
+        kind: "configmap",
+        name,
+        ok: (await kubectlRaw(["get", "configmap", name], ctx)).exitCode === 0,
+      })),
+      ...refs.secrets.map(async (name) => ({
+        kind: "secret",
+        name,
+        ok: (await kubectlRaw(["get", "secret", name], ctx)).exitCode === 0,
+      })),
+    ]);
+    const missing = checks.filter((c) => !c.ok);
+    if (missing.length > 0) {
+      blocks.push(
+        `diagnosis: ${missing.map((m) => `${m.kind} "${m.name}"`).join(", ")} referenced by this pod does not exist in namespace ${pod.metadata.namespace ?? "default"}`,
+      );
+    }
+  }
 
   const eventRows = (events.items ?? [])
     .map((e) => ({

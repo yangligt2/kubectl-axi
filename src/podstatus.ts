@@ -16,6 +16,16 @@ export interface ContainerSpec {
   name: string;
   image?: string;
   ports?: Array<{ containerPort?: number }>;
+  envFrom?: Array<{
+    configMapRef?: { name?: string };
+    secretRef?: { name?: string };
+  }>;
+  env?: Array<{
+    valueFrom?: {
+      configMapKeyRef?: { name?: string };
+      secretKeyRef?: { name?: string };
+    };
+  }>;
   readinessProbe?: Probe;
   resources?: {
     limits?: Record<string, string>;
@@ -59,6 +69,11 @@ export interface Pod {
     tolerations?: Array<{ key?: string; operator?: string; value?: string; effect?: string }>;
     containers?: ContainerSpec[];
     initContainers?: ContainerSpec[];
+    volumes?: Array<{
+      configMap?: { name?: string };
+      secret?: { secretName?: string };
+      persistentVolumeClaim?: { claimName?: string };
+    }>;
   };
   status?: {
     phase?: string;
@@ -166,6 +181,36 @@ export function nodeSelectorExpression(pod: Pod): string | null {
   return Object.entries(selector)
     .map(([key, value]) => `${key}=${value}`)
     .join(",");
+}
+
+/** ConfigMap and Secret names this pod references (envFrom, env, volumes). */
+export function referencedConfig(pod: Pod): {
+  configmaps: string[];
+  secrets: string[];
+} {
+  const configmaps = new Set<string>();
+  const secrets = new Set<string>();
+  const specs = [
+    ...(pod.spec?.containers ?? []),
+    ...(pod.spec?.initContainers ?? []),
+  ];
+  for (const spec of specs) {
+    for (const entry of spec.envFrom ?? []) {
+      if (entry.configMapRef?.name) configmaps.add(entry.configMapRef.name);
+      if (entry.secretRef?.name) secrets.add(entry.secretRef.name);
+    }
+    for (const entry of spec.env ?? []) {
+      if (entry.valueFrom?.configMapKeyRef?.name)
+        configmaps.add(entry.valueFrom.configMapKeyRef.name);
+      if (entry.valueFrom?.secretKeyRef?.name)
+        secrets.add(entry.valueFrom.secretKeyRef.name);
+    }
+  }
+  for (const volume of pod.spec?.volumes ?? []) {
+    if (volume.configMap?.name) configmaps.add(volume.configMap.name);
+    if (volume.secret?.secretName) secrets.add(volume.secret.secretName);
+  }
+  return { configmaps: [...configmaps], secrets: [...secrets] };
 }
 
 /** One-word-ish container state: running / waiting: X / terminated: X (exit N). */

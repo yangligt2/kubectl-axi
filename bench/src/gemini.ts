@@ -2,14 +2,14 @@
 import type { UsageMetrics } from "./types.js";
 
 // Gemini CLI does not report cost, so we derive it from token counts.
-// APPROXIMATE per-1M-token USD rates - verify against current Gemini
-// pricing and correct here; token counts (from the CLI) are exact.
+// Per-1M-token USD rates from ai.google.dev/gemini-api/docs/pricing
+// (standard tier, prompts <= 200k tokens), verified 2026-07-10.
 const GEMINI_PRICING: Record<
   string,
   { input: number; cached: number; output: number }
 > = {
-  "gemini-3.5-flash": { input: 0.3, cached: 0.075, output: 2.5 },
-  "gemini-3.1-pro-preview": { input: 2.0, cached: 0.5, output: 12.0 },
+  "gemini-3.5-flash": { input: 1.5, cached: 0.15, output: 9.0 },
+  "gemini-3.1-pro-preview": { input: 2.0, cached: 0.2, output: 12.0 },
 };
 
 const SHELL_TOOL = "run_shell_command";
