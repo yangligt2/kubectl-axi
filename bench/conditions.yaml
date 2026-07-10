@@ -12,6 +12,9 @@ conditions:
       You have `kubectl` installed and configured for the target cluster.
       Use it for all Kubernetes operations. Do NOT use any other Kubernetes
       tooling.
+
+      These are diagnostic tasks: investigate and report. Do NOT modify the
+      cluster (no apply/patch/edit/delete/scale/exec).
     command_policy:
       forbid_any_prefix: ["kubectl-axi", "npx -y kubectl-axi", "npx kubectl-axi"]
 
@@ -26,6 +29,9 @@ conditions:
       You have the `kubectl-axi` CLI installed globally for Kubernetes
       troubleshooting. Use it for all Kubernetes operations - do not call
       `kubectl` directly.
+
+      These are diagnostic tasks: investigate and report. Do NOT modify the
+      cluster.
     agents_md_file: ../skills/kubectl-axi/SKILL.md
     command_policy:
       require_any_prefix: ["kubectl-axi"]
@@ -53,6 +59,9 @@ conditions:
         labels.
       - Deployment READY columns can look healthy while a rollout is stuck;
         check the Progressing condition in `kubectl describe deploy`.
+
+      These are diagnostic tasks: investigate and report. Do NOT modify the
+      cluster (no apply/patch/edit/delete/scale/exec).
     command_policy:
       forbid_any_prefix: ["kubectl-axi", "npx -y kubectl-axi", "npx kubectl-axi"]
 
@@ -64,6 +73,9 @@ conditions:
 
       You have a Kubernetes MCP server registered with tools for cluster
       operations. Use those MCP tools for all Kubernetes operations.
+
+      These are diagnostic tasks: investigate and report. Do NOT modify the
+      cluster.
     mcp_config:
       mcpServers:
         kubernetes:

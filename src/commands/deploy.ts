@@ -6,7 +6,11 @@ import { AxiError } from "../errors.js";
 import { getPositional, validateFlags } from "../args.js";
 import { formatCountLine, formatEmptyLine, truncate } from "../format.js";
 import { formatRelativeTime, renderError, renderHelp, renderOutput } from "../toon.js";
-import { deploymentHealth, type Deployment } from "../workloads.js";
+import {
+  deploymentHealth,
+  selectorExpression,
+  type Deployment,
+} from "../workloads.js";
 
 export const DEPLOY_HELP = `usage: kubectl-axi deploy [list|view <name>] [flags]
 subcommands[2]:
@@ -113,6 +117,11 @@ async function viewDeploy(args: string[], ctx?: KubeContext): Promise<string> {
         images: (deploy.spec?.template?.spec?.containers ?? [])
           .map((c) => c.image ?? "")
           .join(","),
+        // Selector and template labels together let selector/label
+        // mismatches (deployment vs service) be diagnosed in one call.
+        selector: selectorExpression(deploy.spec?.selector?.matchLabels) ?? "none",
+        pod_labels:
+          selectorExpression(deploy.spec?.template?.metadata?.labels) ?? "none",
       },
     }),
   ];

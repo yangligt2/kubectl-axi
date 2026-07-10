@@ -139,7 +139,9 @@ export function grade(task: TaskDef, trajectory: string): GradeResult {
           "-p", prompt,
           "--model", JUDGE_MODEL,
           "--output-format", "text",
-          "--max-turns", "1",
+          // Long trajectories can consume a turn on internal deliberation;
+          // give the judge headroom (it still cannot run tools).
+          "--max-turns", "4",
           "--dangerously-skip-permissions",
           "--no-session-persistence",
         ],

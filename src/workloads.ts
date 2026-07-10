@@ -18,6 +18,7 @@ export interface Deployment {
     replicas?: number;
     selector?: { matchLabels?: Record<string, string> };
     template?: {
+      metadata?: { labels?: Record<string, string> };
       spec?: { containers?: Array<{ name: string; image?: string }> };
     };
   };

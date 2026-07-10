@@ -8,7 +8,8 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { formatTrajectory, grade, validateCommandPolicy } from "./grader.js";
 import { extractFinalText, parseClaudeJsonl } from "./usage.js";
 import {
@@ -19,6 +20,21 @@ import {
 import type { RunResult, RunSpec, UsageMetrics } from "./types.js";
 
 const AGENT_TIMEOUT_MS = 5 * 60 * 1000;
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+
+/**
+ * Agents can mutate the shared fixture cluster (a raw-kubectl run once
+ * "fixed" the endpoints fault, poisoning every later run of that task).
+ * Re-assert fixture state before each run. BENCH_SKIP_RECONCILE=1 skips.
+ */
+function reconcileFixtures(kubeconfig: string): void {
+  if (process.env.BENCH_SKIP_RECONCILE === "1") return;
+  execFileSync("bash", [join(REPO_ROOT, "scripts", "reconcile-faults.sh")], {
+    env: { ...process.env, KUBECONFIG: kubeconfig },
+    timeout: 180_000,
+    stdio: "pipe",
+  });
+}
 
 interface AgentRun {
   usage: UsageMetrics;
@@ -32,6 +48,7 @@ export function runOne(spec: RunSpec, resultsDir: string): RunResult {
   const artifactDir = join(resultsDir, condition.id, task.id, `run${run}`);
   const workspaceDir = join(artifactDir, "workspace");
   mkdirSync(workspaceDir, { recursive: true });
+  reconcileFixtures(spec.kubeconfig);
 
   let agentRun: AgentRun;
   try {
