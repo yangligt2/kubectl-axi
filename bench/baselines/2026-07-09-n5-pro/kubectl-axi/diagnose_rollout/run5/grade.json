@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran commands against the cluster (deploy list, deploy view, pods list, pods view) and correctly identified both required facts: (1) the rollout is stuck with ProgressDeadlineExceeded because the new ReplicaSet cannot progress, and (2) the root cause is the invalid image nginx:2.0-does-not-exist causing ImagePullBackOff on the new pod, while the old v1 pods continue serving traffic.",
+  "judge_model": "claude-sonnet-4-6"
+}

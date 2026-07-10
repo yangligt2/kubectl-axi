@@ -1,0 +1,5 @@
+{
+  "task_success": false,
+  "details": "command used forbidden tooling: kubectl get pod frontend-78db8fc954-wr797 -n fault-readiness -o yaml",
+  "failure_reason": "policy_violation"
+}

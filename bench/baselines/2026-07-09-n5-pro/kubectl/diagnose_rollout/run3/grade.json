@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster (get all, describe deployment, describe pod) and correctly identified both required facts: (1) the rollout is stuck with Progressing=False/ProgressDeadlineExceeded, with old v1 pods still serving; and (2) the root cause is the non-existent image nginx:2.0-does-not-exist causing ImagePullBackOff on the new replica set's pod.",
+  "judge_model": "claude-sonnet-4-6"
+}

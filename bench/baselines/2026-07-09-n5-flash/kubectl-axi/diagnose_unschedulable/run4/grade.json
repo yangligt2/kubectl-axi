@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran commands against the cluster (kubectl-axi pods, kubectl-axi pods view, kubectl-axi nodes), correctly identified the pod as Unschedulable, and surfaced the exact root cause: the nodeSelector requiring disktype=ssd-nvme-gen5 which no node in the cluster has. The diagnosis is complete and accurate.",
+  "judge_model": "claude-sonnet-4-6"
+}

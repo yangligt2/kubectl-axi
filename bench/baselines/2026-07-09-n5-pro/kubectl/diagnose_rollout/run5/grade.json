@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, observed the actual evidence (ErrImagePull on checkout-7877c44d95-xvrwb, Progressing=False with ProgressDeadlineExceeded, old v1 pods still serving), and correctly identified both required facts: the rollout is stuck/stalled AND the specific root cause is the invalid image nginx:2.0-does-not-exist that cannot be pulled from the registry.",
+  "judge_model": "claude-sonnet-4-6"
+}

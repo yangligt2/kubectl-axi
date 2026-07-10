@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran comprehensive kubectl commands (get all, get endpoints, get events, describe deployment, get logs, check network policies, quotas, etc.) and correctly concluded with confidence that everything in the 'healthy' namespace is functioning perfectly. The answer matched the known facts: deployment 2/2 ready, service with matching endpoints, no errors in logs or events. No hedging or invented problems.",
+  "judge_model": "claude-sonnet-4-6"
+}

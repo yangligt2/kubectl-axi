@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl logs against the crashing pod, retrieved the exact error message 'FATAL: cannot connect to database db.internal:5432 - connection refused', and correctly identified the root cause as a database connection failure. The agent quoted the log line verbatim in its final answer.",
+  "judge_model": "claude-sonnet-4-6"
+}

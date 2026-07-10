@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, found the pod in ImagePullBackOff state, described the pod to get the exact details, and correctly identified the failing image as nginx:1.99.99-nonexistent. The answer is complete and accurate.",
+  "judge_model": "claude-sonnet-4-6"
+}

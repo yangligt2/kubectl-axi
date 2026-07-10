@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster and correctly identified the full causal chain: pod db-5bfcfcd584-jcf6z is Pending because it requires PVC 'data-cache', which is stuck Pending because its StorageClass 'fast-ssd' does not exist in the cluster (only 'standard' exists). The evidence from kubectl get events, kubectl get pvc, kubectl get storageclass, and kubectl get pvc -o jsonpath all directly support the diagnosis.",
+  "judge_model": "claude-sonnet-4-6"
+}

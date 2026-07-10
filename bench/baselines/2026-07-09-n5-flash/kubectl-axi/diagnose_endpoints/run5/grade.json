@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran commands against the cluster (triage, svc view, pods, deploy view) and correctly identified the root cause: the service 'web' has selector 'app=web-backend-v2' while the running pods are labeled 'app=web-backend', resulting in zero endpoints. The diagnosis is accurate, complete, and supported by the command output.",
+  "judge_model": "claude-sonnet-4-6"
+}

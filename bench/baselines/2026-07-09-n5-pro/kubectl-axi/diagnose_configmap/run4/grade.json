@@ -1,0 +1,5 @@
+{
+  "task_success": false,
+  "details": "command used forbidden tooling: kubectl get configmap -n fault-configmap",
+  "failure_reason": "policy_violation"
+}

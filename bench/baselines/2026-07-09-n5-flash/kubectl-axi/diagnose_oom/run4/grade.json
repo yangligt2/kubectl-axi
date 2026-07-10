@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl-axi commands against the cluster, identified the restarting pod cache-8699d5cb59-sh7mf in namespace fault-oom, and correctly reported both required facts: the termination reason is OOMKilled (exit code 137) and the configured memory limit is 25Mi.",
+  "judge_model": "claude-sonnet-4-6"
+}

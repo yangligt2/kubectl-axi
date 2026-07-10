@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran `kubectl get nodes -o wide` and `kubectl get node kubectl-axi-bench-control-plane -o json` to inspect actual node conditions, correctly identified all pressure conditions (MemoryPressure, DiskPressure, PIDPressure) as False and Ready as True, and confidently reported the node as healthy with no resource pressure.",
+  "judge_model": "claude-sonnet-4-6"
+}

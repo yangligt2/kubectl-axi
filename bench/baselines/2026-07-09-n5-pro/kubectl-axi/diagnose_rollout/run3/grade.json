@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl-axi commands against the cluster, inspecting the deployment, pods, and the failing pod's details. It correctly identified: (1) the rollout is stuck with ProgressDeadlineExceeded, (2) the old v1 pods are still serving traffic while the new ReplicaSet cannot progress, and (3) the root cause is the non-existent image 'nginx:2.0-does-not-exist' causing ImagePullBackOff. All required facts from the known facts are present in the agent's report.",
+  "judge_model": "claude-sonnet-4-6"
+}

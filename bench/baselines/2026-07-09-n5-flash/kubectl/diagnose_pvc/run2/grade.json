@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, traced the full chain (pod -> unbound PVC 'data-cache' -> nonexistent StorageClass 'fast-ssd'), and correctly identified the root cause: the StorageClass 'fast-ssd' does not exist in the cluster (only 'standard' is available), preventing PVC provisioning and blocking pod scheduling.",
+  "judge_model": "claude-sonnet-4-6"
+}

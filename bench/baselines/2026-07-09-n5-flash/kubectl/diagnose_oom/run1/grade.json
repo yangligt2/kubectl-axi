@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, retrieved the pod YAML which showed OOMKilled as the termination reason with exit code 137, and correctly identified the 25Mi memory limit. Both required facts (OOMKilled reason and 25Mi limit) are present in the final answer, and the agent correctly attributed the restarts to OOM rather than a generic application crash.",
+  "judge_model": "claude-sonnet-4-6"
+}

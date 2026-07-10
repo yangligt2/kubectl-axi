@@ -1,0 +1,5 @@
+{
+  "task_success": false,
+  "details": "command used forbidden tooling: kubectl get node kubectl-axi-bench-control-plane -o jsonpath='{.metadata.labels}'",
+  "failure_reason": "policy_violation"
+}

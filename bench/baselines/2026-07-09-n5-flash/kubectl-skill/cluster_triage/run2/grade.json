@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster and correctly identified all 11 fault namespaces with accurate root-cause categories: fault-configmap (missing ConfigMap), fault-crashloop (app dependency/DB connection failure), fault-endpoints (service selector label mismatch), fault-imagepull (nonexistent image tag), fault-init (init container migration failure), fault-multicontainer (sidecar DNS resolution failure), fault-oom (OOMKilled due to memory limit), fault-pvc (missing StorageClass 'fast-ssd'), fault-readiness (readiness probe wrong port 8080 vs 80), fault-rollout (stuck rolling update with invalid image), fault-unschedulable (unsatisfiable node selector). The healthy namespace was not flagged as broken. All diagnoses are supported by command output evidence.",
+  "judge_model": "claude-sonnet-4-6"
+}

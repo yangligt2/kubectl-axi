@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster and correctly identified both required facts: (1) the termination reason is OOMKilled (confirmed via lastState showing reason='OOMKilled' and exit code 137), and (2) the configured memory limit is 25Mi (confirmed via resources.limits). The agent did not misattribute the restarts to an application crash.",
+  "judge_model": "claude-sonnet-4-6"
+}

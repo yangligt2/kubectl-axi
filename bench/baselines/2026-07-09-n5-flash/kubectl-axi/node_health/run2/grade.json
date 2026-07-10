@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran `kubectl-axi nodes` which directly showed the single control-plane node is Ready with no pressure, then verified with `kubectl-axi triage`. It correctly reported the node as healthy with no memory/disk/PID pressure, and accurately distinguished that the unschedulable pods were due to workload-level issues (bad node selector, unbound PVC) rather than node health problems. The answer is confident, evidence-based, and correct.",
+  "judge_model": "claude-sonnet-4-6"
+}

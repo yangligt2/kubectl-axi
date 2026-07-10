@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, correctly identified the CreateContainerConfigError status, and specifically named the missing ConfigMap 'app-config' as the root cause. The diagnosis is complete, accurate, and supported by evidence from the cluster.",
+  "judge_model": "claude-sonnet-4-6"
+}

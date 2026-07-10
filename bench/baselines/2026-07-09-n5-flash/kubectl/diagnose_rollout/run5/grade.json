@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, correctly identified that the rollout is stalled with ProgressDeadlineExceeded, found the root cause (nginx:2.0-does-not-exist image does not exist in the registry causing ImagePullBackOff), and correctly reported that v1 pods are still serving traffic while the v2 replica is stuck. All required facts from the known facts are present in the agent's report.",
+  "judge_model": "claude-sonnet-4-6"
+}

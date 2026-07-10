@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran commands against the cluster (kubectl-axi pods, kubectl-axi pvc, kubectl-axi pvc view) and correctly traced the full chain: pod db-5bfcfcd584-jcf6z is Pending/Unschedulable because it has an unbound PVC named 'data-cache', which is Pending because its requested StorageClass 'fast-ssd' does not exist in the cluster (only 'standard' is available). The diagnosis is complete and matches the known facts exactly.",
+  "judge_model": "claude-sonnet-4-6"
+}

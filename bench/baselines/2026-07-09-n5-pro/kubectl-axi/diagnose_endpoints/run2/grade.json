@@ -1,0 +1,5 @@
+{
+  "task_success": false,
+  "details": "command used forbidden tooling: kubectl get svc web -n fault-endpoints -o yaml",
+  "failure_reason": "policy_violation"
+}

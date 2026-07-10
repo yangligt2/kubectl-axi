@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran `kubectl get nodes -o wide` and `kubectl describe node kubectl-axi-bench-control-plane`, directly inspecting the node's conditions. It correctly identified the single control-plane node as Ready with MemoryPressure=False, DiskPressure=False, and PIDPressure=False, and reported the cluster as healthy with no nodes under resource pressure. The answer is confident, accurate, and fully supported by the command output.",
+  "judge_model": "claude-sonnet-4-6"
+}

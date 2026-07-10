@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster (get pods, describe pod, logs --previous), retrieved the actual container logs, and quoted the exact error message 'FATAL: cannot connect to database db.internal:5432 - connection refused'. The root cause analysis correctly identifies the database connection failure as the reason for the CrashLoopBackOff.",
+  "judge_model": "claude-sonnet-4-6"
+}

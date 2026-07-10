@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl-axi triage, pods view, and logs commands against the cluster, retrieved the actual container logs, and quoted the exact error message 'FATAL: cannot connect to database db.internal:5432 - connection refused'. The root cause (database connection failure) was correctly identified with evidence from the logs.",
+  "judge_model": "claude-sonnet-4-6"
+}

@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran commands against the cluster (pods, pods view, pvc, pvc view, triage) and correctly traced the full chain: pod db-5bfcfcd584-jcf6z → unbound PVC data-cache → nonexistent StorageClass fast-ssd. The root cause was explicitly identified with supporting evidence from the ProvisioningFailed event.",
+  "judge_model": "claude-sonnet-4-6"
+}

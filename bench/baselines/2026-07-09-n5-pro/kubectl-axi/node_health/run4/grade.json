@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran `kubectl-axi nodes` and inspected actual cluster data, then correctly reported that the single control-plane node is Ready with no resource pressure. The answer is definitive and matches the known facts.",
+  "judge_model": "claude-sonnet-4-6"
+}

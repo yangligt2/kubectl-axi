@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran the correct kubectl commands (get pods, describe pod, get pvc, describe pvc, get storageclass) and correctly traced the full chain: pod db-5bfcfcd584-jcf6z is Pending because PVC 'data-cache' is unbound, and PVC 'data-cache' is unbound because StorageClass 'fast-ssd' does not exist in the cluster. The root cause was correctly identified with supporting evidence from the actual cluster output.",
+  "judge_model": "claude-sonnet-4-6"
+}

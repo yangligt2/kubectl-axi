@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl-axi commands against the cluster, observed OOMKilled (exit 137) in the last_state field, and correctly reported both required facts: the pod is killed due to OOMKilled and the memory limit is 25Mi.",
+  "judge_model": "claude-sonnet-4-6"
+}

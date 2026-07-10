@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl-axi triage and kubectl-axi pods view commands against the cluster, correctly identified the deployment 'web' in namespace 'fault-imagepull' as failing due to ImagePullBackOff, and named the exact failing image reference 'nginx:1.99.99-nonexistent'.",
+  "judge_model": "claude-sonnet-4-6"
+}

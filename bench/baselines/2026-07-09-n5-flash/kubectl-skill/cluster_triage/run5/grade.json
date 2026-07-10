@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran thorough kubectl commands against the cluster (get pods -A, describe pods, get logs, get svc/endpoints, get pvc, etc.) and correctly identified all 11 fault namespaces with accurate root-cause categories: fault-configmap (missing ConfigMap), fault-crashloop (DB connection refused), fault-endpoints (service selector mismatch app=web-backend-v2 vs app=web-backend), fault-imagepull (nonexistent image tag), fault-init (init container migration table locked), fault-multicontainer (sidecar DNS resolution failure), fault-oom (OOMKilled with 25Mi limit), fault-pvc (StorageClass fast-ssd not found), fault-readiness (probe on port 8080 but container listens on 80), fault-rollout (stuck rolling update with bad image causing ProgressDeadlineExceeded), fault-unschedulable (nodeSelector disktype=ssd-nvme-gen5 matches no nodes). The healthy namespace was correctly not flagged as broken. All diagnoses are supported by the command output evidence.",
+  "judge_model": "claude-sonnet-4-6"
+}

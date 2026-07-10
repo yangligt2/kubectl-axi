@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster and correctly traced the full chain: pod db-5bfcfcd584-jcf6z is Pending -> PVC data-cache is Pending/unbound -> StorageClass 'fast-ssd' does not exist in the cluster (only 'standard' is present). The root cause was identified with evidence from the PVC events showing 'storageclass.storage.k8s.io \"fast-ssd\" not found'.",
+  "judge_model": "claude-sonnet-4-6"
+}

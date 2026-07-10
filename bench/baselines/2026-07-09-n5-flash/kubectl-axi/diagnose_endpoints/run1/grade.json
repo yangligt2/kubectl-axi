@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl-axi commands against the cluster, discovered that the service selector 'app=web-backend-v2' matched zero pods, identified that the running pods are labeled 'app=web-backend', and correctly diagnosed the selector/label mismatch as the root cause of the empty endpoints and connection failure. The diagnosis is accurate, complete, and supported by actual command output.",
+  "judge_model": "claude-sonnet-4-6"
+}

@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl-axi commands against the cluster, observed that the service selector 'app=web-backend-v2' matched 0 pods while the actual pods were labeled 'app=web-backend', and correctly identified the root cause as a label selector mismatch resulting in zero endpoints.",
+  "judge_model": "claude-sonnet-4-6"
+}

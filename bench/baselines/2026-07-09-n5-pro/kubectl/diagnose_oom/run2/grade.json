@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, correctly identified OOMKilled as the termination reason from the lastState field, and correctly reported the 25Mi memory limit from the container spec. The agent also correctly explained the root cause (tail /dev/zero consuming unbounded memory).",
+  "judge_model": "claude-sonnet-4-6"
+}

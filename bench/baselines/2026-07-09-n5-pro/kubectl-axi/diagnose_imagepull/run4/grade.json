@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl-axi triage and pods view commands against the cluster, which returned clear evidence of the ImagePullBackOff state. The agent correctly identified the exact failing image reference 'nginx:1.99.99-nonexistent' and provided a complete, accurate diagnosis matching the known facts.",
+  "judge_model": "claude-sonnet-4-6"
+}

@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent correctly traced the full chain: pod db-5bfcfcd584-jcf6z is Pending → PVC data-cache is unbound → StorageClass 'fast-ssd' does not exist in the cluster (only 'standard' exists). All conclusions were backed by actual kubectl commands run against the cluster.",
+  "judge_model": "claude-sonnet-4-6"
+}

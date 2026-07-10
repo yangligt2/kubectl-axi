@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster (get pods, describe pod, get events, logs, get deploy -o yaml) and correctly identified the root cause: the readiness probe targets port 8080 but nginx listens on port 80, causing connection refused errors. The agent explicitly stated the probe/port mismatch as the primary root cause with supporting evidence from the cluster output.",
+  "judge_model": "claude-sonnet-4-6"
+}

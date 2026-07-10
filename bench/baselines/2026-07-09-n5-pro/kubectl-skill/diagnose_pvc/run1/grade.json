@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent correctly traced the full chain: pod -> unbound PVC 'data-cache' -> nonexistent StorageClass 'fast-ssd'. It ran the appropriate kubectl commands (get pods, describe pod, get pvc, describe pvc, get storageclass) and correctly identified the root cause from actual cluster output, including the explicit ProvisioningFailed event message 'storageclass.storage.k8s.io \"fast-ssd\" not found'.",
+  "judge_model": "claude-sonnet-4-6"
+}

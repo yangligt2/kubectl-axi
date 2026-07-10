@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent correctly identified the root cause: the service 'web' has selector 'app=web-backend-v2' but the actual pods are labeled 'app=web-backend', resulting in zero endpoints. The agent ran cluster commands (svc view, pods, pods view) that confirmed the mismatch, and explicitly stated the selector/label mismatch as the diagnosis. No hallucination — the evidence from the commands directly supports the conclusion.",
+  "judge_model": "claude-sonnet-4-6"
+}

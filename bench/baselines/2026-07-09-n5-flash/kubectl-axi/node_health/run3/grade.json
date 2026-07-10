@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran `kubectl-axi nodes` and `kubectl-axi nodes view kubectl-axi-bench-control-plane`, directly inspecting node conditions. It correctly reported the single control-plane node is Ready with no MemoryPressure, DiskPressure, or PIDPressure, and no taints. The agent answered confidently and accurately based on observed evidence.",
+  "judge_model": "claude-sonnet-4-6"
+}

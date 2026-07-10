@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran multiple cluster commands (triage, pods, deploy, svc) confirming everything is healthy, then gave a confident, unhedged answer that nothing is wrong with the workloads in the healthy namespace.",
+  "judge_model": "claude-sonnet-4-6"
+}

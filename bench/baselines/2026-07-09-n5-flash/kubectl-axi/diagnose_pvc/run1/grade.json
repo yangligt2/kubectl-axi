@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran cluster commands (triage, pvc view, pod view) and correctly identified the full chain: pod db-5bfcfcd584-jcf6z is Pending/Unschedulable → because PVC 'data-cache' is unbound → because StorageClass 'fast-ssd' does not exist in the cluster (only 'standard' is available). The diagnosis is complete and accurate with evidence from actual cluster output.",
+  "judge_model": "claude-sonnet-4-6"
+}

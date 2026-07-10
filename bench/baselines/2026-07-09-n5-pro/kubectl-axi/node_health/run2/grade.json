@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran `kubectl-axi nodes` which returned concrete evidence: 1 node (kubectl-axi-bench-control-plane) with status Ready and pressure=none. The agent correctly and confidently reported the node is healthy with no memory/disk/PID pressure, matching the known facts exactly.",
+  "judge_model": "claude-sonnet-4-6"
+}

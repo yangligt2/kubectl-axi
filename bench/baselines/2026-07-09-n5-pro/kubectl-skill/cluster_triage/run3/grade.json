@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran comprehensive kubectl commands against the live cluster and correctly identified all 11 fault namespaces with accurate root causes: fault-configmap (missing ConfigMap), fault-crashloop (DB connection refused), fault-endpoints (service selector mismatch app=web-backend-v2 vs app=web-backend), fault-imagepull (nonexistent image tag), fault-init (init container DB migration lock), fault-multicontainer (log-shipper DNS resolution failure), fault-oom (OOMKilled exit code 137), fault-pvc (missing StorageClass fast-ssd), fault-readiness (readiness probe port mismatch), fault-rollout (stalled rollout due to bad image), fault-unschedulable (node selector disktype=ssd-nvme-gen5 not matched). The healthy namespace was correctly not flagged. All diagnoses are directly supported by command output evidence.",
+  "judge_model": "claude-sonnet-4-6"
+}

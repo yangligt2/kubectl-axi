@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster and correctly identified the root cause: the service selector app=web-backend-v2 does not match the pod labels app=web-backend, resulting in zero endpoints and failed requests. The evidence from the commands directly supports the diagnosis.",
+  "judge_model": "claude-sonnet-4-6"
+}

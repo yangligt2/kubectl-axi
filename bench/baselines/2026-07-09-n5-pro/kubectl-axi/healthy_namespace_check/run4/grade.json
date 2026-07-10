@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran multiple commands (triage, pods, deploy, events) against the cluster and confidently concluded that everything is healthy in the 'healthy' namespace. The findings match the known facts: deployment storefront is 2/2 ready, all pods are running with 0 restarts, and no warning events exist. The agent gave a definitive answer without hedging or inventing problems.",
+  "judge_model": "claude-sonnet-4-6"
+}

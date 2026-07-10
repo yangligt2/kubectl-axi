@@ -1,0 +1,5 @@
+{
+  "task_success": false,
+  "details": "command used forbidden tooling: kubectl get deployment frontend -n fault-readiness -o yaml",
+  "failure_reason": "policy_violation"
+}

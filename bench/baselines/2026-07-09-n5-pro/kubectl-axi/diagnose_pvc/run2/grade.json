@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran the correct sequence of commands (pods → pods view → pvc → pvc view) and produced the complete causal chain: pod is Unschedulable because PVC 'data-cache' is Pending because StorageClass 'fast-ssd' does not exist in the cluster (only 'standard' is available). The diagnosis matches all known facts exactly.",
+  "judge_model": "claude-sonnet-4-6"
+}

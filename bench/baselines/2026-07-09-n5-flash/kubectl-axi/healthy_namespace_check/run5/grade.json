@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran multiple kubectl-axi commands (triage, pods, svc, deploy, events) against the cluster and confirmed everything is healthy. It gave a confident, definitive answer with no hedging: deployment storefront is 2/2 ready, both pods are Running with 0 restarts, the service has 2 ready backends, and no warning events exist.",
+  "judge_model": "claude-sonnet-4-6"
+}

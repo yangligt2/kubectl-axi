@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, traced the full chain (pod -> unbound PVC 'data-cache' -> missing StorageClass 'fast-ssd'), and correctly identified the root cause as the nonexistent 'fast-ssd' StorageClass. The evidence from kubectl describe pvc and kubectl get storageclass directly supports the diagnosis.",
+  "judge_model": "claude-sonnet-4-6"
+}

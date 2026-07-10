@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster (get pods, logs --previous, logs, describe pod, get deployment), retrieved the actual container logs showing 'FATAL: cannot connect to database db.internal:5432 - connection refused', and correctly quoted this exact error message in its final answer. The diagnosis was fully supported by observed evidence.",
+  "judge_model": "claude-sonnet-4-6"
+}

@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, found the pod status showing OOMKilled, inspected the pod YAML confirming the 25Mi memory limit and OOMKilled termination reason, and correctly identified both required facts: the pod is killed due to OOMKilled (not an application crash) and the memory limit is 25Mi.",
+  "judge_model": "claude-sonnet-4-6"
+}

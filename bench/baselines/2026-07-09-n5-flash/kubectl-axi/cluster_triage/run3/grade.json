@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran comprehensive kubectl-axi commands against the live cluster and correctly identified all 11 fault namespaces with accurate root causes: fault-configmap (missing ConfigMap), fault-crashloop (DB connection refused), fault-imagepull (nonexistent image tag), fault-init (init container CrashLoopBackOff due to locked DB migration), fault-multicontainer (sidecar DNS resolution failure), fault-oom (OOMKilled with 25Mi limit), fault-pvc (unbound PVC due to missing StorageClass fast-ssd), fault-readiness (readiness probe port mismatch 8080 vs 80), fault-rollout (stuck rollout with bad image tag), fault-unschedulable (unsatisfiable node selector disktype=ssd-nvme-gen5), and fault-endpoints (service selector label mismatch app=web-backend-v2 vs app=web-backend). All diagnoses are directly supported by command output. The healthy namespace was not flagged. The agent achieved full coverage (11/11) with specific, evidence-backed root causes.",
+  "judge_model": "claude-sonnet-4-6"
+}

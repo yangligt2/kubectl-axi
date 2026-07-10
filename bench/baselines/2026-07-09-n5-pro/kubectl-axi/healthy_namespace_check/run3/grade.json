@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran `kubectl-axi triage -n healthy` against the cluster, received confirmation that all pods, rollouts, PVCs, service endpoints, and nodes are healthy, and responded confidently that nothing is wrong with the workloads in the 'healthy' namespace without hedging or inventing problems.",
+  "judge_model": "claude-sonnet-4-6"
+}

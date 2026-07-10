@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands to inspect the service, pods, endpoints, and deployment. It correctly identified that the 'web' service selector (app: web-backend-v2) does not match the pod labels (app: web-backend), resulting in empty endpoints and failed traffic routing. This matches the known root cause exactly.",
+  "judge_model": "claude-sonnet-4-6"
+}

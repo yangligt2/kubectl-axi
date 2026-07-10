@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran `kubectl-axi triage` against the live cluster and produced a complete, accurate triage summary covering all 11 fault namespaces with correct root-cause categories: missing ConfigMap (fault-configmap), CrashLoopBackOff (fault-crashloop), ImagePullBackOff (fault-imagepull), init container crash (fault-init), sidecar container crash (fault-multicontainer), OOM/CrashLoopBackOff (fault-oom), unbound PVC with missing StorageClass (fault-pvc), failing readiness probe (fault-readiness), stuck rollout with ImagePullBackOff on new pod (fault-rollout), node affinity mismatch (fault-unschedulable), and service with no matching endpoints (fault-endpoints). The healthy namespace was not flagged. All 11 faults were identified with plausible and specific root causes directly supported by the command output.",
+  "judge_model": "claude-sonnet-4-6"
+}

@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent successfully ran kubectl commands against the cluster, retrieved the container logs using --previous flag, and correctly identified both the exact error message ('FATAL: cannot connect to database db.internal:5432 - connection refused') and the root cause (container crashing due to database connection failure). The diagnosis was fully supported by actual command output.",
+  "judge_model": "claude-sonnet-4-6"
+}

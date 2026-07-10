@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl-axi svc view which revealed the selector 'app=web-backend-v2' with 0 endpoints and showed the actual pod labels as 'app=web-backend'. The agent correctly identified the selector/label mismatch as the root cause and provided a clear, accurate diagnosis with the specific fix needed.",
+  "judge_model": "claude-sonnet-4-6"
+}

@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent correctly investigated the crashlooping pods in the fault-crashloop namespace by running kubectl-axi commands to list pods, view pod details, and retrieve container logs. It retrieved the exact error message 'FATAL: cannot connect to database db.internal:5432 - connection refused' from the container logs and correctly identified the root cause as a database connection failure.",
+  "judge_model": "claude-sonnet-4-6"
+}

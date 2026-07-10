@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran actual kubectl-axi commands against the cluster, traced the full chain (pod -> unbound PVC 'data-cache' -> nonexistent StorageClass 'fast-ssd'), and correctly identified the root cause with supporting evidence from cluster events showing 'storageclass.storage.k8s.io \"fast-ssd\" not found'.",
+  "judge_model": "claude-sonnet-4-6"
+}
