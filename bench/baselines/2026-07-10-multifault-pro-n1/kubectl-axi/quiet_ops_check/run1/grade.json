@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran comprehensive kubectl-axi commands (triage, pods, pod view, deploy, svc, events, logs --previous, pvc) and correctly concluded nothing is broken. It correctly identified the db-migrate Job as successfully Completed, explained the single web pod restart as a benign transient startup blip (supported by the 'cache cold' log from --previous), confirmed the deployment is healthy (1/1 ready), and gave a confident definitive answer that nothing is broken.",
+  "judge_model": "claude-sonnet-4-6"
+}

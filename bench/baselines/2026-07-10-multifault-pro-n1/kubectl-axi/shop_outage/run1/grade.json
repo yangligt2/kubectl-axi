@@ -1,0 +1,5 @@
+{
+  "task_success": false,
+  "details": "command used forbidden tooling: kubectl get deploy web -n shop-checkout -o yaml",
+  "failure_reason": "policy_violation"
+}
