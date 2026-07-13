@@ -5,6 +5,8 @@
  * diagnostic signal, never scrape human-oriented output.
  */
 
+import type { ContainerSpec } from "./podstatus.js";
+
 export interface WorkloadCondition {
   type: string;
   status: string;
@@ -19,7 +21,7 @@ export interface Deployment {
     selector?: { matchLabels?: Record<string, string> };
     template?: {
       metadata?: { labels?: Record<string, string> };
-      spec?: { containers?: Array<{ name: string; image?: string }> };
+      spec?: { containers?: ContainerSpec[] };
     };
   };
   status?: {

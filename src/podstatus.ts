@@ -21,6 +21,8 @@ export interface ContainerSpec {
     secretRef?: { name?: string };
   }>;
   env?: Array<{
+    name?: string;
+    value?: string;
     valueFrom?: {
       configMapKeyRef?: { name?: string };
       secretKeyRef?: { name?: string };
@@ -211,6 +213,26 @@ export function referencedConfig(pod: Pod): {
     if (volume.secret?.secretName) secrets.add(volume.secret.secretName);
   }
   return { configmaps: [...configmaps], secrets: [...secrets] };
+}
+
+/** Compact env summary: "DB_HOST=database,KEY=(cm:app-config)". Inline
+ * values catch the wrong-service-name class of wiring mistakes without a
+ * raw `-o yaml` pull. */
+export function envSummary(spec: ContainerSpec | undefined): string {
+  const entries = spec?.env ?? [];
+  if (entries.length === 0) {
+    return "none";
+  }
+  return entries
+    .map((e) => {
+      if (e.value !== undefined) return `${e.name}=${e.value}`;
+      if (e.valueFrom?.configMapKeyRef?.name)
+        return `${e.name}=(cm:${e.valueFrom.configMapKeyRef.name})`;
+      if (e.valueFrom?.secretKeyRef?.name)
+        return `${e.name}=(secret:${e.valueFrom.secretKeyRef.name})`;
+      return `${e.name}=(dynamic)`;
+    })
+    .join(",");
 }
 
 /** One-word-ish container state: running / waiting: X / terminated: X (exit N). */

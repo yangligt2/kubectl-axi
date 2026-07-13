@@ -9,6 +9,7 @@ import { renderError, renderHelp, renderOutput, formatRelativeTime } from "../to
 import { getSuggestions } from "../suggestions.js";
 import {
   containerStateString,
+  envSummary,
   isNotReady,
   lastStateString,
   limitsSummary,
@@ -252,6 +253,7 @@ async function viewPod(args: string[], ctx?: KubeContext): Promise<string> {
               .join(",") || "none",
           readiness: probeSummary(spec),
           limits: limitsSummary(spec),
+          env: truncate(envSummary(spec), 140),
         };
       }),
     }),

@@ -37,6 +37,35 @@ interface List<T> {
   items: T[];
 }
 
+interface Quota {
+  metadata: { name: string; namespace?: string };
+  status?: { hard?: Record<string, string>; used?: Record<string, string> };
+}
+
+/** Quota rows where used has reached hard - silent pod-creation blockers. */
+function exhaustedQuotaRows(quotas: Quota[]) {
+  return quotas.flatMap((q) => {
+    const hard = q.status?.hard ?? {};
+    const used = q.status?.used ?? {};
+    return Object.keys(hard)
+      .filter((key) => {
+        const h = hard[key];
+        const u = used[key] ?? "0";
+        if (u === h) return true;
+        // Numeric compare only for plain counts; unit-suffixed quantities
+        // (500Mi vs 1Gi) are not comparable without full quantity parsing.
+        return /^\d+$/.test(h) && /^\d+$/.test(u) && Number(u) >= Number(h);
+      })
+      .map((key) => ({
+        namespace: q.metadata.namespace ?? "",
+        name: q.metadata.name,
+        resource: key,
+        used: used[key] ?? "0",
+        hard: hard[key],
+      }));
+  });
+}
+
 export async function triageCommand(
   args: string[],
   ctx?: KubeContext,
@@ -58,7 +87,7 @@ export async function triageCommand(
 
   // One turn, seven parallel reads. Failed checks degrade to a notice
   // instead of failing the whole triage (no silent skips).
-  const [pods, deploys, pvcs, services, endpoints, nodes, events] =
+  const [pods, deploys, pvcs, services, endpoints, nodes, events, quotas] =
     await Promise.all([
       kubectlJson<List<Pod>>(["get", "pods", "-o", "json"], scoped).catch(
         () => null,
@@ -84,6 +113,10 @@ export async function triageCommand(
       ).catch(() => null),
       kubectlJson<List<EventItem>>(
         ["get", "events", "-o", "json"],
+        scoped,
+      ).catch(() => null),
+      kubectlJson<List<Quota>>(
+        ["get", "resourcequotas", "-o", "json"],
         scoped,
       ).catch(() => null),
     ]);
@@ -194,6 +227,17 @@ export async function triageCommand(
     }
   } else {
     skipped.push("service endpoints");
+  }
+
+  // Exhausted quotas - block pod creation with no Pending pod as evidence
+  if (quotas) {
+    const rows = exhaustedQuotaRows(quotas.items ?? []);
+    issueCount += rows.length;
+    if (rows.length > 0) {
+      blocks.push(encode({ exhausted_quotas: rows }));
+    }
+  } else {
+    skipped.push("resourcequotas");
   }
 
   // Node pressure / readiness

@@ -89,6 +89,47 @@ describe("svcCommand view", () => {
     expect(result).toContain("pods view api-1");
   });
 
+  it("flags a targetPort no container declares", async () => {
+    mockedJson.mockImplementation(async (args: string[]) => {
+      if (args[1] === "service") {
+        return {
+          metadata: { name: "web", namespace: "shop-checkout" },
+          spec: {
+            selector: { app: "web" },
+            ports: [{ port: 80, targetPort: 8080 }],
+          },
+        };
+      }
+      if (args[1] === "endpoints") {
+        return { metadata: { name: "web" }, subsets: [] };
+      }
+      return {
+        items: [
+          {
+            metadata: { name: "web-1", namespace: "shop-checkout" },
+            spec: { containers: [{ name: "web", ports: [{ containerPort: 80 }] }] },
+            status: {
+              phase: "Running",
+              containerStatuses: [
+                { name: "web", ready: true, restartCount: 0, state: { running: {} } },
+              ],
+            },
+          },
+        ],
+      };
+    });
+
+    const result = await svcCommand(["view", "web"], {
+      namespace: "shop-checkout",
+      allNamespaces: false,
+    });
+
+    expect(result).toContain(
+      "targetPort 8080 matches no declared containerPort",
+    );
+    expect(result).toContain("declared: 80");
+  });
+
   it("lists services with backend readiness inline", async () => {
     mockedJson.mockImplementation(async (args: string[]) => {
       if (args[1] === "services") {

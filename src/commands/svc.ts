@@ -201,6 +201,30 @@ async function viewSvc(args: string[], ctx?: KubeContext): Promise<string> {
         ready: isNotReady(pod) ? "no" : "yes",
       }));
       blocks.push(encode({ matching_pods: rows }));
+
+      // Novice classic: service targetPort points at a port no container
+      // declares - broken even with healthy, selected pods.
+      const declaredPorts = new Set<number>();
+      for (const pod of pods) {
+        for (const container of pod.spec?.containers ?? []) {
+          for (const port of container.ports ?? []) {
+            if (port.containerPort !== undefined) {
+              declaredPorts.add(port.containerPort);
+            }
+          }
+        }
+      }
+      const mismatched = (svc.spec?.ports ?? []).filter(
+        (p) =>
+          typeof p.targetPort === "number" &&
+          declaredPorts.size > 0 &&
+          !declaredPorts.has(p.targetPort),
+      );
+      if (mismatched.length > 0) {
+        blocks.push(
+          `diagnosis: service targetPort ${mismatched.map((p) => p.targetPort).join(",")} matches no declared containerPort on the selected pods (declared: ${[...declaredPorts].join(",")})`,
+        );
+      }
       const readyCount = rows.filter((r) => r.ready === "yes").length;
       if (counts.ready === 0 && readyCount === 0) {
         blocks.push(

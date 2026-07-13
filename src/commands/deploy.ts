@@ -11,6 +11,8 @@ import {
   selectorExpression,
   type Deployment,
 } from "../workloads.js";
+import { envSummary } from "../podstatus.js";
+import { eventTimestamp, type EventItem } from "./events.js";
 
 export const DEPLOY_HELP = `usage: kubectl-axi deploy [list|view <name>] [flags]
 subcommands[2]:
@@ -96,10 +98,22 @@ async function viewDeploy(args: string[], ctx?: KubeContext): Promise<string> {
   }
   validateFlags("deploy view", args, {}, "-n/--namespace, --context");
 
-  const deploy = await kubectlJson<Deployment>(
-    ["get", "deployment", name, "-o", "json"],
-    ctx,
-  );
+  // ReplicaSet warnings surface pod-creation failures (quota, admission)
+  // that never produce a Pending pod - the "3 replicas but 1 pod" trap.
+  const [deploy, rsEvents] = await Promise.all([
+    kubectlJson<Deployment>(["get", "deployment", name, "-o", "json"], ctx),
+    kubectlJson<{ items: EventItem[] }>(
+      [
+        "get",
+        "events",
+        "-o",
+        "json",
+        "--field-selector",
+        "involvedObject.kind=ReplicaSet,type=Warning",
+      ],
+      ctx,
+    ).catch(() => ({ items: [] as EventItem[] })),
+  ]);
   const health = deploymentHealth(deploy);
   const status = deploy.status ?? {};
 
@@ -122,9 +136,34 @@ async function viewDeploy(args: string[], ctx?: KubeContext): Promise<string> {
         selector: selectorExpression(deploy.spec?.selector?.matchLabels) ?? "none",
         pod_labels:
           selectorExpression(deploy.spec?.template?.metadata?.labels) ?? "none",
+        env: truncate(
+          (deploy.spec?.template?.spec?.containers ?? [])
+            .map((c) => envSummary(c))
+            .filter((s) => s !== "none")
+            .join("; ") || "none",
+          140,
+        ),
       },
     }),
   ];
+
+  const warnings = (rsEvents.items ?? [])
+    .filter((e) => String(e.involvedObject?.name ?? "").startsWith(`${name}-`))
+    .sort(
+      (a, b) =>
+        new Date(eventTimestamp(b) ?? 0).getTime() -
+        new Date(eventTimestamp(a) ?? 0).getTime(),
+    )
+    .slice(0, 5)
+    .map((e) => ({
+      time: formatRelativeTime(eventTimestamp(e)),
+      reason: e.reason ?? "",
+      count: e.count ?? 1,
+      message: truncate((e.message ?? "").replace(/\s+/g, " ").trim(), 140),
+    }));
+  if (warnings.length > 0) {
+    blocks.push(encode({ replicaset_warnings: warnings }));
+  }
 
   const conditions = (status.conditions ?? []).map((c) => ({
     type: c.type,
