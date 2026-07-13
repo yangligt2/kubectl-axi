@@ -52,8 +52,24 @@ check_multicontainer() {
 check_healthy() {
   [ "$(k -n healthy get deploy storefront -o jsonpath='{.status.readyReplicas}')" = "2" ]
 }
+check_shop() {
+  k -n shop-checkout get pods -o jsonpath='{.items[*].status.containerStatuses[*].state.waiting.reason}' | grep -q CreateContainerConfigError || return 1
+  rc="$(k -n shop-checkout get pods -l app=web -o jsonpath='{.items[0].status.containerStatuses[0].restartCount}')"
+  [ "${rc:-0}" -ge 1 ]
+}
+check_payments() {
+  k -n payments get pods -o jsonpath='{.items[0].status.conditions[?(@.type=="PodScheduled")].reason}' | grep -q Unschedulable
+}
+check_inventory() {
+  [ "$(k -n inventory get pods --no-headers 2>/dev/null | wc -l | tr -d ' ')" = "1" ] &&
+    [ "$(k -n inventory get deploy inventory -o jsonpath='{.spec.replicas}')" = "3" ]
+}
+check_quietops() {
+  [ "$(k -n quiet-ops get job db-migrate -o jsonpath='{.status.succeeded}')" = "1" ] &&
+    [ "$(k -n quiet-ops get pods -l app=web -o jsonpath='{.items[0].status.containerStatuses[0].ready}')" = "true" ]
+}
 
-FIXTURES="crashloop oom imagepull readiness configmap init unschedulable pvc endpoints rollout multicontainer healthy"
+FIXTURES="crashloop oom imagepull readiness configmap init unschedulable pvc endpoints rollout multicontainer healthy shop payments inventory quietops"
 
 deadline=$((SECONDS + TIMEOUT))
 while :; do
@@ -62,7 +78,7 @@ while :; do
     "check_${f}" || pending="${pending} ${f}"
   done
   if [ -z "${pending}" ]; then
-    echo "OK: all 12 fixtures reached expected steady state"
+    echo "OK: all fixtures reached expected steady state"
     exit 0
   fi
   if [ "${SECONDS}" -ge "${deadline}" ]; then

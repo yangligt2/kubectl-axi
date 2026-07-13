@@ -1,0 +1,96 @@
+# Scenario 13: shop-checkout - novice multi-fault app (3 compounding mistakes)
+# 1. db deployment references secret "db-credentials" that does not exist
+#    (CreateContainerConfigError).
+# 2. web crashloops: DB_HOST=database but the service is named "db"
+#    (logs: cannot resolve database).
+# 3. Service "web" targets port 8080 but the container listens on 80 -
+#    still broken even after the crashes are fixed (spec-visible).
+# All three are diagnosable from current state.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: shop-checkout
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: shop-checkout
+  labels:
+    app: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: db
+          image: busybox:1.36
+          command: ["sh", "-c", "sleep 3600"]
+          envFrom:
+            - secretRef:
+                name: db-credentials
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: shop-checkout
+spec:
+  selector:
+    app: db
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: shop-checkout
+  labels:
+    app: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: busybox:1.36
+          env:
+            - name: DB_HOST
+              value: database
+          ports:
+            - containerPort: 80
+          command:
+            - sh
+            - -c
+            - >-
+              echo "shop web starting, db host: $DB_HOST";
+              nslookup "$DB_HOST" >/dev/null 2>&1 ||
+              echo "FATAL: cannot resolve database host '$DB_HOST'" >&2;
+              sleep 3;
+              exit 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: shop-checkout
+spec:
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: 8080

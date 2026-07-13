@@ -1,0 +1,39 @@
+# Scenario 15: inventory - one hidden root cause, confusing surface.
+# A ResourceQuota caps the namespace at 1 pod; the deployment wants 3.
+# Surface state: deployment 1/3 ready with NO pending pods (they are never
+# created). Evidence lives in ReplicaSet FailedCreate events: exceeded quota.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: inventory
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: inventory-quota
+  namespace: inventory
+spec:
+  hard:
+    pods: "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory
+  namespace: inventory
+  labels:
+    app: inventory
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      containers:
+        - name: inventory
+          image: busybox:1.36
+          command: ["sh", "-c", "sleep 3600"]

@@ -160,13 +160,75 @@ tasks:
       cluster: each failing workload and its root-cause category.
     grading:
       grading_hint: >
-        There are 11 fault namespaces (fault-crashloop, fault-oom,
-        fault-imagepull, fault-readiness, fault-configmap, fault-init,
-        fault-unschedulable, fault-pvc, fault-endpoints, fault-rollout,
-        fault-multicontainer) with distinct root causes, plus a healthy
-        namespace that must NOT be flagged. Full credit: at least 9 of the 11
-        correctly identified with a plausible root-cause category. Missing 3+
-        faults, or flagging the healthy namespace as broken, is a failure.
+        Broken: the 11 fault-* namespaces (crashloop, oom, imagepull,
+        readiness, configmap, init, unschedulable, pvc, endpoints, rollout,
+        multicontainer) plus shop-checkout (missing secret, crashlooping web,
+        service port mismatch), payments (unschedulable + missing configmap),
+        and inventory (quota blocks 2 of 3 replicas). The healthy and
+        quiet-ops namespaces must NOT be flagged. Full credit: at least 12 of
+        the 14 broken namespaces identified with plausible categories; missing
+        3+ or flagging a healthy namespace is a failure.
+
+  # ── Category D: Multi-fault scenarios ──────────────────────────
+
+  shop_outage:
+    category: multi_fault
+    prompt: >
+      Users report the shop is down: requests to the `web` service in
+      namespace shop-checkout fail. Find every distinct problem that must be
+      fixed to restore service - assume that fixing only some of them will
+      leave the shop broken.
+    grading:
+      grading_hint: >
+        Three distinct problems, all required: (1) secret "db-credentials"
+        referenced by the db deployment does not exist
+        (CreateContainerConfigError); (2) web crashloops because DB_HOST is
+        "database" while the actual service is named "db" (logs: cannot
+        resolve database); (3) service "web" targets port 8080 but the
+        container listens on port 80, so it stays broken even once the pods
+        run. Naming only one or two of the three is a failure.
+
+  payments_layered:
+    category: multi_fault
+    prompt: >
+      Pods in namespace payments will not start. A teammate says they fixed a
+      scheduling problem there once before and "something else broke right
+      after". Report ALL issues that must be resolved before the pods can
+      run, not just the first one you find.
+    grading:
+      grading_hint: >
+        Two issues, both required: (1) nodeSelector disk=ssd matches no node
+        (pod Pending/Unschedulable); (2) the pod references configmap
+        "payments-config" via envFrom and that configmap does not exist - a
+        masked fault that only becomes symptomatic after scheduling is fixed.
+        Reporting only the scheduling issue is a failure.
+
+  inventory_missing_replicas:
+    category: multi_fault
+    prompt: >
+      The inventory deployment in namespace inventory is set to 3 replicas
+      but only 1 pod exists - and there are no pending pods. Explain exactly
+      why the other 2 pods are missing.
+    grading:
+      grading_hint: >
+        The ResourceQuota "inventory-quota" caps the namespace at pods=1, so
+        the ReplicaSet's pod creations are rejected (FailedCreate events:
+        exceeded quota). The agent must attribute the missing pods to the
+        quota; generic answers like "scheduling problems" without the quota
+        are failures.
+
+  quiet_ops_check:
+    category: multi_fault
+    prompt: >
+      During on-call handover you are told namespace quiet-ops "looks weird".
+      Is anything actually broken there? Give a definitive answer.
+    grading:
+      grading_hint: >
+        Nothing is broken: the db-migrate Job completed normally, and the web
+        pod restarted once at startup but has been Running and stable since.
+        The correct answer is a confident "nothing is broken" (explaining the
+        benign signals is a plus). Flagging the Completed job or the old
+        restart as a problem, or hedging, is a failure.
 
   node_health:
     category: triage

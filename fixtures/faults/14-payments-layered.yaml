@@ -1,0 +1,36 @@
+# Scenario 14: payments - masked/layered faults.
+# Symptomatic now: Pending, nodeSelector disk=ssd matches no node.
+# Masked behind it: envFrom references configmap "payments-config" which
+# does not exist - it would only become symptomatic after scheduling is
+# fixed, but it is visible in the spec today. Complete diagnosis = both.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: payments
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-api
+  namespace: payments
+  labels:
+    app: payments-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments-api
+  template:
+    metadata:
+      labels:
+        app: payments-api
+    spec:
+      nodeSelector:
+        disk: ssd
+      containers:
+        - name: api
+          image: busybox:1.36
+          command: ["sh", "-c", "sleep 3600"]
+          envFrom:
+            - configMapRef:
+                name: payments-config

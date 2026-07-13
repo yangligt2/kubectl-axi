@@ -257,14 +257,10 @@ async function viewPod(args: string[], ctx?: KubeContext): Promise<string> {
     }),
   );
 
-  // CreateContainerConfigError means a referenced ConfigMap/Secret is bad;
-  // cross-check existence so the diagnosis is definitive in this one call
-  // (same pattern as pvc view's storage-class check).
-  const hasConfigError = [
-    ...initStatuses,
-    ...(pod.status?.containerStatuses ?? []),
-  ].some((s) => s.state?.waiting?.reason === "CreateContainerConfigError");
-  if (hasConfigError) {
+  // Cross-check every referenced ConfigMap/Secret unconditionally: a missing
+  // ref is symptomatic later (CreateContainerConfigError) but is a latent,
+  // masked fault even while the pod is still Pending on something else.
+  {
     const refs = referencedConfig(pod);
     const checks = await Promise.all([
       ...refs.configmaps.map(async (name) => ({
