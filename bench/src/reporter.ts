@@ -11,6 +11,7 @@ interface ConditionSummary {
   avg_cost_usd: number;
   avg_duration_seconds: number;
   avg_turns: number;
+  fallback_rate: number;
 }
 
 export function loadResults(resultsDir: string): RunResult[] {
@@ -55,6 +56,7 @@ function summarize(results: RunResult[]): ConditionSummary[] {
       avg_cost_usd: avg(runs.map((r) => r.usage.total_cost_usd)),
       avg_duration_seconds: avg(runs.map((r) => r.usage.wall_clock_seconds)),
       avg_turns: avg(runs.map((r) => r.usage.turn_count)),
+      fallback_rate: avg(runs.map((r) => ((r.fallback_count ?? 0) > 0 ? 1 : 0))),
     }))
     .sort((a, b) => a.avg_cost_usd - b.avg_cost_usd);
 }
@@ -68,12 +70,12 @@ export function writeReports(resultsDir: string): string {
     "",
     `Runs: ${results.length}`,
     "",
-    "| Condition | Runs | Success | Avg Input Tokens | Avg Output Tokens | Avg Cost | Avg Duration | Avg Turns |",
-    "| --- | --- | --- | --- | --- | --- | --- | --- |",
+    "| Condition | Runs | Success | Avg Input Tokens | Avg Output Tokens | Avg Cost | Avg Duration | Avg Turns | Fallback Rate |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
   ];
   for (const s of summaries) {
     md.push(
-      `| ${s.condition} | ${s.runs} | ${(s.success_rate * 100).toFixed(0)}% | ${Math.round(s.avg_input_tokens).toLocaleString()} | ${Math.round(s.avg_output_tokens).toLocaleString()} | $${s.avg_cost_usd.toFixed(3)} | ${s.avg_duration_seconds.toFixed(1)}s | ${s.avg_turns.toFixed(1)} |`,
+      `| ${s.condition} | ${s.runs} | ${(s.success_rate * 100).toFixed(0)}% | ${Math.round(s.avg_input_tokens).toLocaleString()} | ${Math.round(s.avg_output_tokens).toLocaleString()} | $${s.avg_cost_usd.toFixed(3)} | ${s.avg_duration_seconds.toFixed(1)}s | ${s.avg_turns.toFixed(1)} | ${(s.fallback_rate * 100).toFixed(0)}% |`,
     );
   }
 

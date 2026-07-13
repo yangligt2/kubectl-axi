@@ -65,5 +65,8 @@ export interface RunResult {
   timestamp: string;
   usage: UsageMetrics;
   grade: GradeResult;
+  /** Commands that escaped to forbidden tooling (coverage-gap metric). */
+  fallback_count?: number;
+  fallback_commands?: string[];
   agent_output: string;
 }

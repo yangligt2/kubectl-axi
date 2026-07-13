@@ -57,6 +57,12 @@ async function listNodes(args: string[], ctx?: KubeContext): Promise<string> {
       pressure: pressureSummary(node),
       version: node.status?.nodeInfo?.kubeletVersion ?? "",
       age: formatRelativeTime(node.metadata.creationTimestamp).replace(" ago", ""),
+      labels: truncate(
+        Object.entries(node.metadata.labels ?? {})
+          .map(([key, value]) => `${key}=${value}`)
+          .join(",") || "none",
+        110,
+      ),
     }))
     .sort((a, b) => {
       if ((a.status === "Ready") !== (b.status === "Ready")) {

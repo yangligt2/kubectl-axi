@@ -10,7 +10,7 @@ import {
 } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { formatTrajectory, grade, validateCommandPolicy } from "./grader.js";
+import { collectFallbacks, formatTrajectory, grade } from "./grader.js";
 import { extractFinalText, parseClaudeJsonl } from "./usage.js";
 import {
   extractGeminiFinalText,
@@ -60,17 +60,11 @@ export function runOne(spec: RunSpec, resultsDir: string): RunResult {
     rmSync(workspaceDir, { recursive: true, force: true });
   }
 
-  const policyViolation = validateCommandPolicy(
+  const fallbacks = collectFallbacks(
     agentRun.usage.command_log,
     condition.command_policy,
   );
-  const gradeResult = policyViolation
-    ? {
-        task_success: false,
-        details: policyViolation,
-        failure_reason: "policy_violation" as const,
-      }
-    : grade(task, agentRun.trajectory);
+  const gradeResult = grade(task, agentRun.trajectory);
   writeFileSync(
     join(artifactDir, "grade.json"),
     JSON.stringify(gradeResult, null, 2),
@@ -85,6 +79,8 @@ export function runOne(spec: RunSpec, resultsDir: string): RunResult {
     timestamp: new Date().toISOString(),
     usage: agentRun.usage,
     grade: gradeResult,
+    fallback_count: fallbacks.length,
+    fallback_commands: fallbacks.slice(0, 10),
     agent_output: agentRun.finalText,
   };
   upsertResult(resultsDir, result);

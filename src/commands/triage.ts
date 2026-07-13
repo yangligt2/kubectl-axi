@@ -11,7 +11,9 @@ import {
   endpointCounts,
   nodeIssues,
   pvcPending,
+  quotaAtLimit,
   selectorExpression,
+  type Quota,
   type Deployment,
   type Endpoints,
   type KubeNode,
@@ -37,25 +39,13 @@ interface List<T> {
   items: T[];
 }
 
-interface Quota {
-  metadata: { name: string; namespace?: string };
-  status?: { hard?: Record<string, string>; used?: Record<string, string> };
-}
-
 /** Quota rows where used has reached hard - silent pod-creation blockers. */
 function exhaustedQuotaRows(quotas: Quota[]) {
   return quotas.flatMap((q) => {
     const hard = q.status?.hard ?? {};
     const used = q.status?.used ?? {};
     return Object.keys(hard)
-      .filter((key) => {
-        const h = hard[key];
-        const u = used[key] ?? "0";
-        if (u === h) return true;
-        // Numeric compare only for plain counts; unit-suffixed quantities
-        // (500Mi vs 1Gi) are not comparable without full quantity parsing.
-        return /^\d+$/.test(h) && /^\d+$/.test(u) && Number(u) >= Number(h);
-      })
+      .filter((key) => quotaAtLimit(hard[key], used[key] ?? "0"))
       .map((key) => ({
         namespace: q.metadata.namespace ?? "",
         name: q.metadata.name,

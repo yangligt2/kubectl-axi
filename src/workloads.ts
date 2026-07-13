@@ -112,6 +112,20 @@ export function nodeIssues(node: KubeNode): NodeIssue[] {
   return issues;
 }
 
+export interface Quota {
+  metadata: { name: string; namespace?: string; creationTimestamp?: string };
+  status?: { hard?: Record<string, string>; used?: Record<string, string> };
+}
+
+/** True when used has reached hard for one quota resource. Numeric compare
+ * only for plain counts; unit-suffixed quantities need equality. */
+export function quotaAtLimit(hard: string, used: string): boolean {
+  if (used === hard) return true;
+  return (
+    /^\d+$/.test(hard) && /^\d+$/.test(used) && Number(used) >= Number(hard)
+  );
+}
+
 export interface Pvc {
   metadata: { name: string; namespace?: string; creationTimestamp?: string };
   spec?: {

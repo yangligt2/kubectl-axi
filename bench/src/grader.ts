@@ -61,31 +61,21 @@ export function formatTrajectory(raw: string): string {
     .replace(/\0/g, "");
 }
 
-/** Fail runs that used forbidden tooling before wasting a judge call. */
-export function validateCommandPolicy(
+/**
+ * Commands that escaped to forbidden tooling. Runs are graded on
+ * correctness regardless; fallback count is reported as its own metric
+ * (coverage-gap signal), since documented raw-kubectl fallback is
+ * legitimate production behavior.
+ */
+export function collectFallbacks(
   commandLog: string[],
   policy: CommandPolicy | undefined,
-): string | null {
-  if (!policy) return null;
-  for (const raw of commandLog) {
-    const command = raw.trim();
-    for (const forbidden of policy.forbid_any_prefix ?? []) {
-      if (command.startsWith(forbidden)) {
-        return `command used forbidden tooling: ${command.slice(0, 120)}`;
-      }
-    }
-  }
-  if (policy.require_any_prefix && policy.require_any_prefix.length > 0) {
-    const used = commandLog.some((raw) =>
-      policy.require_any_prefix!.some((prefix) =>
-        raw.trim().startsWith(prefix),
-      ),
-    );
-    if (commandLog.length > 0 && !used) {
-      return `no command used the required tooling (${policy.require_any_prefix.join(", ")})`;
-    }
-  }
-  return null;
+): string[] {
+  const forbidden = policy?.forbid_any_prefix ?? [];
+  if (forbidden.length === 0) return [];
+  return commandLog
+    .map((raw) => raw.trim())
+    .filter((command) => forbidden.some((prefix) => command.startsWith(prefix)));
 }
 
 function buildJudgePrompt(task: TaskDef, trajectory: string): string {

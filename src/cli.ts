@@ -17,6 +17,14 @@ import { nodesCommand, NODES_HELP } from "./commands/nodes.js";
 import { svcCommand, SVC_HELP } from "./commands/svc.js";
 import { pvcCommand, PVC_HELP } from "./commands/pvc.js";
 import { ctxCommand, CTX_HELP } from "./commands/ctx.js";
+import {
+  cmCommand,
+  CM_HELP,
+  quotaCommand,
+  QUOTA_HELP,
+  secretCommand,
+  SECRET_HELP,
+} from "./commands/listers.js";
 import { setupCommand, SETUP_HELP } from "./commands/setup.js";
 
 export const DESCRIPTION =
@@ -31,8 +39,8 @@ type MainOptions = {
 };
 
 export const TOP_HELP = `usage: kubectl-axi [command] [args] [flags]
-commands[10]:
-  (none)=cluster snapshot, triage, pods, logs, events, deploy, nodes, svc, pvc, ctx, setup
+commands[13]:
+  (none)=cluster snapshot, triage, pods, logs, events, deploy, nodes, svc, pvc, cm, secret, quota, ctx, setup
 flags[5]:
   -n/--namespace <ns> (after command), -A/--all-namespaces, --context <name>, --help, -v/-V/--version
 examples:
@@ -55,6 +63,9 @@ const COMMAND_HELP: Record<string, string> = {
   nodes: NODES_HELP,
   svc: SVC_HELP,
   pvc: PVC_HELP,
+  cm: CM_HELP,
+  secret: SECRET_HELP,
+  quota: QUOTA_HELP,
   ctx: CTX_HELP,
   setup: SETUP_HELP,
 };
@@ -70,6 +81,9 @@ const COMMANDS: Record<string, CommandFn> = {
   nodes: withKubeContext(nodesCommand),
   svc: withKubeContext(svcCommand),
   pvc: withKubeContext(pvcCommand),
+  cm: withKubeContext(cmCommand),
+  secret: withKubeContext(secretCommand),
+  quota: withKubeContext(quotaCommand),
   ctx: withKubeContext(ctxCommand),
   setup: setupCommand,
 };
