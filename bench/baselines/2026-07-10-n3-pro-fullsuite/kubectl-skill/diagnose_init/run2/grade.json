@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran the correct kubectl commands against the cluster, identified the failing init container as 'migrate' in CrashLoopBackOff, fetched its logs with -c migrate, and correctly reported the error message 'ERROR: migration table is locked by another job'. The answer is complete and matches the known facts.",
+  "judge_model": "claude-sonnet-4-6"
+}

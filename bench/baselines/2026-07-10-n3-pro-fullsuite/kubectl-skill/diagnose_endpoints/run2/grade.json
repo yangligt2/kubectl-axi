@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran kubectl commands against the cluster, observed that the service selector was 'app=web-backend-v2' while pods were labeled 'app=web-backend', confirmed the endpoints were empty (<none>), and correctly identified the selector/label mismatch as the root cause. The diagnosis is accurate, complete, and supported by actual cluster evidence.",
+  "judge_model": "claude-sonnet-4-6"
+}
