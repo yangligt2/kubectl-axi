@@ -1,0 +1,5 @@
+{
+  "task_success": true,
+  "details": "The agent ran cluster commands (deploy view, quota) and correctly identified the root cause: ResourceQuota 'inventory-quota' caps the namespace at pods=1, causing FailedCreate events that block the remaining 2 pods from being created. The answer is accurate, specific, and fully supported by the command output.",
+  "judge_model": "claude-sonnet-4-6"
+}
